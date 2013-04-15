@@ -1,6 +1,8 @@
 package com.teamtyro.src;
 
 public class TestSubject {
+	String name
+	int ethnicity
 	int actions[];
 	public TestSubject() {
 		
