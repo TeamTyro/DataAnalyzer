@@ -5,14 +5,41 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
+import org.lwjgl.LWJGLException;
+import org.lwjgl.opengl.Display;
+import org.lwjgl.opengl.DisplayMode;
+import org.lwjgl.opengl.GL11;
+
+import com.teamtyro.etc.Constants;
+import com.teamtyro.etc.MazeMap;
+
 public class DataAnalyzer {
 	private static TestSubject subjects[];
+	private static int map[][];
 	
 	public static void main(String[] args) {
 		System.out.printf("DataAnalyzer V 0.0.1\n");
 		
 		subjects = new TestSubject [10];
 		parseTextyText("/home/xavi/Desktop/game_first_run.txt");
+		
+		map = new int[16][16];
+		MazeMap maze = new MazeMap();
+		maze.loadConstMap("cbbbccccccccbbbbcccccbbbbbbcbbbbcbbbcbsbccbcbbbbcccbccc" +
+				"bccccbbbbcbcbbbcbbbcbbbbbcbcbbbcbcccbbbbbcccccccccbbbbbbbcbbbbbbb" +
+				"bbbcbbbbccccccccccbcbbbbbbbbbcbbbcccbbbbcccbbcccccccbbbbcbccccbcc" +
+				"cbcbbbbcbbbbbbcbcbcbbbbcbwcccbcbcbcbbbbcbbbbcbbbcbcbbbbcccccccccc" +
+				"ccbbbb");
+		
+		for(int x=0; x<Constants.MAP_WIDTH; x++) {
+			for(int y=0; y<Constants.MAP_HEIGHT; y++) {
+				map[x][y] = maze.getSpace(x,y);
+			}
+		}
+		
+		printMaze(map);
+		
+		begin();
 	}
 	
 	private static void parseTextyText(String filename) {
@@ -56,7 +83,110 @@ public class DataAnalyzer {
 	    } catch(IOException ex) {}
 	}
 	
-	private void render() {
+	private static void begin() {
+		try {
+			Display.setDisplayMode(new DisplayMode(960,720));
+			Display.create();
+		} catch (LWJGLException e) {
+			e.printStackTrace();
+			System.exit(0);
+		}
+
+		// Init OpenGL
+		GL11.glMatrixMode(GL11.GL_PROJECTION);
+		GL11.glLoadIdentity();
+		GL11.glOrtho(0, 960, 0, 720, 1, -1);
+		GL11.glMatrixMode(GL11.GL_MODELVIEW);
+
+		// Start main loop
+		while(!Display.isCloseRequested()) {
+			// Clears screen and depth buffer
+			GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
+
+			// Rendering
+			render();
+
+			Display.update();
+		}
+
+		Display.destroy();
+	}
+	
+	private static void render() {
+		float bs = 32;
+		GL11.glBegin(GL11.GL_LINE_LOOP);
+			GL11.glVertex2f( 3*bs, 3*bs);
+			GL11.glVertex2f(19*bs, 3*bs);
+			GL11.glVertex2f(19*bs,19*bs);
+			GL11.glVertex2f( 3*bs,19*bs);
+		GL11.glEnd();
 		
+		for(int y=0; y<Constants.MAP_HEIGHT; y++) {
+			for(int x=0; x<Constants.MAP_WIDTH; x++) {
+				switch(map[x][y]) {
+				case Constants.MAP_BLOCK:
+					GL11.glColor3f(1, 0, 0);
+					GL11.glBegin(GL11.GL_QUADS);
+						GL11.glVertex2f((3*bs)+(x*bs)   , (18*bs)-(y*bs)   );
+						GL11.glVertex2f((3*bs)+(x*bs)+bs, (18*bs)-(y*bs)   );
+						GL11.glVertex2f((3*bs)+(x*bs)+bs, (18*bs)-(y*bs)+bs);
+						GL11.glVertex2f((3*bs)+(x*bs)   , (18*bs)-(y*bs)+bs);
+					GL11.glEnd();
+					break;
+				case Constants.MAP_START:
+					GL11.glColor3f(1, 1, 0);
+					GL11.glBegin(GL11.GL_QUADS);
+						GL11.glVertex2f((3*bs)+(x*bs)   , (18*bs)-(y*bs)   );
+						GL11.glVertex2f((3*bs)+(x*bs)+bs, (18*bs)-(y*bs)   );
+						GL11.glVertex2f((3*bs)+(x*bs)+bs, (18*bs)-(y*bs)+bs);
+						GL11.glVertex2f((3*bs)+(x*bs)   , (18*bs)-(y*bs)+bs);
+					GL11.glEnd();
+					break;
+				case Constants.MAP_WIN:
+					GL11.glColor3f(0, 1, 0);
+					GL11.glBegin(GL11.GL_QUADS);
+						GL11.glVertex2f((3*bs)+(x*bs)   , (18*bs)-(y*bs)   );
+						GL11.glVertex2f((3*bs)+(x*bs)+bs, (18*bs)-(y*bs)   );
+						GL11.glVertex2f((3*bs)+(x*bs)+bs, (18*bs)-(y*bs)+bs);
+						GL11.glVertex2f((3*bs)+(x*bs)   , (18*bs)-(y*bs)+bs);
+					GL11.glEnd();
+					break;
+				case Constants.MAP_SPACE:
+					
+					break;
+				}
+			}
+		}
+	}
+	
+	private static void printMaze(int[][] tmap) {
+		for(int x=0; x<Constants.MAP_WIDTH+2; x++) {
+			System.out.printf("[-]");
+		}
+		System.out.println("");
+		for (int y = 0; y < Constants.MAP_WIDTH; y++) {
+			System.out.printf("[|]");
+			for (int x = 0; x < Constants.MAP_HEIGHT; x++) {
+				switch (tmap[x][y]) {
+				case Constants.MAP_START:
+					System.out.printf(" s ");
+				case Constants.MAP_BLOCK:
+					System.out.printf("[ ]");
+					break;
+				case Constants.MAP_SPACE:
+					System.out.printf("   ");
+					break;
+				case Constants.MAP_WIN:
+					System.out.printf(" w ");
+				}
+			}
+			System.out.printf("[|]");
+			System.out.println("");
+		}
+		for(int x=0; x<Constants.MAP_WIDTH+2; x++) {
+			System.out.printf("[-]");
+		}
+
+		System.out.printf("\n");
 	}
 }
