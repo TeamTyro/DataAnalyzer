@@ -3,72 +3,94 @@ package com.teamtyro.src;
 import com.teamtyro.etc.Constants;
 
 public class TestSubject {
-	Constants con;
-	String name;
-	int ethnicity, age, gender, playCount;
-	int actions[][];
+	public final int ETH_WHITE 			= 	1;
+	public final int ETH_INDIANALASKAN		=	2;
+	public final int ETH_ASIAN				=	3;
+	public final int ETH_HISPANIC			=	4;
+	public final int ETH_ISLANDER			= 	5;
+	public final int ETH_BLACK				=	6;
+	public final int ETH_OTHER				=	7;
+	public final int ETH_NONE				=	8;
+	
+	public final int AGE_0TO11				=	1;
+	public final int AGE_12TO17			=	2;
+	public final int AGE_18TO24			=	3;
+	public final int AGE_25TO34			=	4;
+	public final int AGE_35TO44			= 	5;
+	public final int AGE_45TO54			=	6;
+	public final int AGE_55TO64			=	7;
+	public final int AGE_65TO74			=	8;
+	public final int AGE_75PLUS			=	9;
+	
+	public final int GEN_MALE				= 	1;
+	public final int GEN_FEMALE			=	2;
+	
+	public final int ERROR					=	69;
+	
+	private Constants con;
+	private int ethnicity, age, gender, playCount;
+	private int actions[][];
 	public TestSubject() {
 		
 	}
 	
-	public TestSubject(String sName, String sEthnicity, String sAge,
-	String sGender, String a, int sPlayCount) {
-		name = sName;
+	public TestSubject(String sEthnicity, String sAge,
+	String sGender, String sActions, int sPlayCount) {
 		
 		if(sEthnicity.equals("American Indian or Alaska Native")) {
-			ethnicity = con.ETH_INDIANALASKAN;
+			ethnicity =  ETH_INDIANALASKAN;
 		} else if(sEthnicity.equals("Asian")) {
-			ethnicity = con.ETH_ASIAN;
+			ethnicity =  ETH_ASIAN;
 		} else if(sEthnicity.equals("Black or African American")) {
-			ethnicity = con.ETH_BLACK;
+			ethnicity =  ETH_BLACK;
 		} else if(sEthnicity.equals("Hispanic or Latino")) {
-			ethnicity = con.ETH_HISPANIC;
+			ethnicity =  ETH_HISPANIC;
 		} else if(sEthnicity.equals("Native Hawaiian or Pacific Islander")) {
-			ethnicity = con.ETH_ISLANDER;
+			ethnicity =  ETH_ISLANDER;
 		} else if(sEthnicity.equals("White")) {
-			ethnicity = con.ETH_WHITE;
+			ethnicity =  ETH_WHITE;
 		} else if(sEthnicity.equals("Other")) {
-			ethnicity = con.ETH_OTHER;
+			ethnicity =  ETH_OTHER;
 		} else if(sEthnicity.equals("Prefer not to say")) {
-			ethnicity = con.ETH_NONE;
+			ethnicity =  ETH_NONE;
 		} else {
-			ethnicity = con.ERROR;
+			//ethnicity =  ERROR;
 		}
 		
 		if(sAge.equals("Under 11")) {
-			age = con.AGE_0TO11;
+			age =  AGE_0TO11;
 		} else if(sAge.equals("12-17")) {
-			age = con.AGE_12TO17;
+			age =  AGE_12TO17;
 		} else if(sAge.equals("18-24")) {
-			age = con.AGE_18TO24;
+			age =  AGE_18TO24;
 		} else if(sAge.equals("25-34")) {
-			age = con.AGE_25TO34;
+			age =  AGE_25TO34;
 		} else if(sAge.equals("35-44")) {
-			age = con.AGE_35TO44;
+			age =  AGE_35TO44;
 		} else if(sAge.equals("45-54")) {
-			age = con.AGE_45TO54;
+			age =  AGE_45TO54;
 		} else if(sAge.equals("55-64")) {
-			age = con.AGE_55TO64;
+			age =  AGE_55TO64;
 		} else if(sAge.equals("65-74")) {
-			age = con.AGE_65TO74;
+			age =  AGE_65TO74;
 		} else if(sAge.equals("75 years or older")) {
-			age = con.AGE_75PLUS;
+			age =  AGE_75PLUS;
 		} else {
-			age = con.ERROR;
+			age =  ERROR;
 		}
 		
 		if(sGender.equals("Male")) {
-			gender = con.GEN_MALE;
+			gender =  GEN_MALE;
 		} else if(sGender.equals("Female")) {
-			gender = con.GEN_FEMALE;
+			gender =  GEN_FEMALE;
 		} else {
-			gender = con.ERROR;
+			gender =  ERROR;
 		}
 		
 		playCount = sPlayCount;
-		actions = new int[sPlayCount][a.length()];
-		for(int i=0; i<a.length(); i++) {
-			actions[0][i] = a.charAt(i);
+		actions = new int[sPlayCount][sActions.length()];
+		for(int i=0; i<sActions.length(); i++) {
+			actions[0][i] = sActions.charAt(i);
 		}
 	}
 	
@@ -82,10 +104,6 @@ public class TestSubject {
 	
 	public int getAge() {
 		return age;
-	}
-	
-	public String getName() {
-		return name;
 	}
 	
 	public int[] getActions(int playNumb) {
