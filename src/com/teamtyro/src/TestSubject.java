@@ -70,6 +70,10 @@ public class TestSubject {
 		}
 	}
 	
+	public int getAction(int s_x, int s_play) {
+		return actions[s_x][s_play];
+	}
+	
 	public int getGender() {
 		return gender;
 	}

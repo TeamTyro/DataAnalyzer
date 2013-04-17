@@ -4,16 +4,23 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
+import com.teamtyro.src.TestSubject;
+
 public class MazeMap {
 	private static int map [] [];
-	private static int mapDarkness [] [];
-
+	private static int dMap[][];
+	private static int sX, sY;
+	
 	public MazeMap() {
 		map = new int [Constants.MAP_WIDTH][Constants.MAP_HEIGHT];
 	}
 
 	public int getSpace(int s_x, int s_y) {
 		return map[s_x][s_y];
+	}
+	
+	public int getDensity(int s_x, int s_y) {
+		return dMap[s_x][s_y];
 	}
 
 	public void loadConstMap(String sMap) {
@@ -31,10 +38,39 @@ public class MazeMap {
 					break;
 				case 'w':
 					map[x][y] = Constants.MAP_WIN;
+					sX = x;
+					sY = y;
 					break;
 				}
 			}
 		}
+	}
+	
+	public void loadDensity(TestSubject subject) {
+		int x = sX;
+		int y = sY;
+		int inc = 0;
+		
+		
+		int actions[] = subject.getActions(0);
+		for(int i=0; i<actions.length; i++) {
+			switch(actions[i]) {
+			case 'l':
+				x--;
+				break;
+			case 'r':
+				x++;
+				break;
+			case 'u':
+				y++;
+				break;
+			case 'd':
+				y--;
+				break;
+			}
+		}
+		
+		dMap[x][y]++;
 	}
 
 	public boolean loadMap(URL s_fileURL) {

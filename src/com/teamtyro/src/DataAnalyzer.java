@@ -16,6 +16,7 @@ import com.teamtyro.etc.MazeMap;
 public class DataAnalyzer {
 	private static TestSubject subjects[];
 	private static int map[][];
+	private static MazeMap maze;
 	
 	public static void main(String[] args) {
 		System.out.printf("DataAnalyzer V 0.0.1\n");
@@ -24,12 +25,15 @@ public class DataAnalyzer {
 		parseTextyText("/home/xavi/Desktop/game_first_run.txt");
 		
 		map = new int[16][16];
-		MazeMap maze = new MazeMap();
+		maze = new MazeMap();
 		maze.loadConstMap("cbbbccccccccbbbbcccccbbbbbbcbbbbcbbbcbsbccbcbbbbcccbccc" +
 				"bccccbbbbcbcbbbcbbbcbbbbbcbcbbbcbcccbbbbbcccccccccbbbbbbbcbbbbbbb" +
 				"bbbcbbbbccccccccccbcbbbbbbbbbcbbbcccbbbbcccbbcccccccbbbbcbccccbcc" +
 				"cbcbbbbcbbbbbbcbcbcbbbbcbwcccbcbcbcbbbbcbbbbcbbbcbcbbbbcccccccccc" +
 				"ccbbbb");
+		for(int i=0; i<10; i++) {
+			maze.loadDensity(subjects[i]);
+		}
 		
 		for(int x=0; x<Constants.MAP_WIDTH; x++) {
 			for(int y=0; y<Constants.MAP_HEIGHT; y++) {
@@ -152,7 +156,7 @@ public class DataAnalyzer {
 					GL11.glEnd();
 					break;
 				case Constants.MAP_SPACE:
-					
+					GL11.glColor3f(0, (float)maze.getDensity(x,y)/(float)10, 0);
 					break;
 				}
 			}
