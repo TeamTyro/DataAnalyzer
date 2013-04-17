@@ -15,11 +15,14 @@ public class DataAnalyzer {
 	
 	
 	public static String mapFile = "map1.txt";
-	private static int[][] map;							// Universal map array [x left = 0][y, top = 0] Returns a constant for what is 
-	public static ReadSolutions r;
-	public static Random generator = new Random();
+	
+	private static int[][] map;							// Universal map array [x left = 0][y, top = 0] Returns a constant for what is
+	private static char[][][][][][] tally = new char[2][2][2][2][4][4];		//0:up; 1:down; 2:left; 3:right; 4:lastOutput;		5: which tally?(for up, down, left, and right outputs)
 	public static int pX;
 	public static int pY;
+	
+	public static ReadSolutions r;
+	public static Random generator = new Random();
 	
 	
 	
@@ -28,15 +31,48 @@ public class DataAnalyzer {
 	public static void main(String[] args) {
 		resetMap();
 		printMaze(map);
-		begin();
 		r = new ReadSolutions(mapFile);
+		r.getRawInputArray();
+		begin();
 	}
 	
 	public static void begin(){
 		setUpScreen();
+		
 		for(int s = 0; s < r.solutions.length; s++){	//Prints out all of the solutions
 			System.out.println(r.solutions[s]);
 		}
+		
+		//Possible solutions: in0:up; in1:down; in2:left; in3:right; in4: lastOutput.
+		//in0: 0,1;	in1: 0,1;	in2: 0,1;	in3: 0,1;	in4: 0,1,2,3;	
+		int counter = 0;
+		for(int in0 = 0; in0 <= 1; in0++){								//in0	block above
+			for(int in1 = 0; in1 <= 1; in1++){							//in1	block below
+				for(int in2 = 0; in2 <=1; in2++){						//in2	block left
+					for(int in3 = 0; in3 <=1; in3++){					//in3	block right
+						for(int in4 = 0; in4 <= 3; in4++){				//in4	last move (up,down,left, or right)
+							System.out.println("#"+counter+": "+in0+" "+in1+" "+in2+" "+in3+" "+in4);
+							counter++;									//Keeps track of what solution key is being printed. Aesthetic only.
+							
+							if(r.tallyInputs[in0][in1][in2][in3][in4][0] != 0){	
+								System.out.println("		Action: UP 		"+r.tallyInputs[in0][in1][in2][in3][in4][0]);
+							}
+							if(r.tallyInputs[in0][in1][in2][in3][in4][1] != 0){	
+								System.out.println("		Action: DOWN 	"+r.tallyInputs[in0][in1][in2][in3][in4][1]);
+							}
+							if(r.tallyInputs[in0][in1][in2][in3][in4][2] != 0){	
+								System.out.println("		Action: LEFT 	"+r.tallyInputs[in0][in1][in2][in3][in4][2]);
+							}
+							if(r.tallyInputs[in0][in1][in2][in3][in4][3] != 0){	
+								System.out.println("		Action: RIGHT	"+r.tallyInputs[in0][in1][in2][in3][in4][3]);
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		
 	}
 	
 	

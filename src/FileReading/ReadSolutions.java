@@ -10,8 +10,10 @@ public class ReadSolutions {
 
 	public static String[] solutions;	//Holds a string of each solution
 	public static String file = "mapsolutions.txt";
-	public static double outputs[][];
 	public static int totalMoves;
+	public static int[][][][][][] tallyInputs = new int[2][2][2][2][4][4];			
+	
+	public static double outputs[][];
 	public static int solutionsCount;
 	public static MazeMap m = new MazeMap();
 	public static int[][] map;
@@ -69,6 +71,24 @@ public class ReadSolutions {
 		return textSolutions;
 	}
 
+	public static void getRawInputArray(){
+		
+		
+		for(int s = 0; s < solutions.length; s++){
+			for(int l = 0; l < solutions[s].length(); l++){
+				
+				int[] sol = getSituation(solutions[s],l);
+				int numericalOutput = 0;
+				if(solutions[s].charAt(l) == 'u'){ numericalOutput = 0;}
+				if(solutions[s].charAt(l) == 'd'){ numericalOutput = 1;}
+				if(solutions[s].charAt(l) == 'l'){ numericalOutput = 2;}
+				if(solutions[s].charAt(l) == 'r'){ numericalOutput = 3;}
+				tallyInputs[sol[0]][sol[1]][sol[2]][sol[3]][sol[4]][numericalOutput] += 1;		//Adds 1 to the tally for the given output of that person, for that given input set.
+			}
+		}
+	}
+	
+	
 	public double[][] getInputs(float percent){											//inputs[][] = {	{bUp, bDown, bLeft, bRight, lMov }, {bUp, bDown, bLeft, bRight, lMov }	} an example of an array with two input sets
 		int solutionsToRecord = ((int) (percent*totalMoves));
 		double inputs[][] = new double[solutionsToRecord][5];							//Makes an array of the appropriate size. (the percent amount of total moves, in int format)
@@ -80,6 +100,10 @@ public class ReadSolutions {
 			for(int j=0; j < inputs[i].length; j++){
 				inputs[i][j] = -10;
 			}
+			
+			
+			
+			
 		}
 
 
@@ -108,7 +132,7 @@ public class ReadSolutions {
 							}
 						}
 						if(isOriginal){
-							inputs[solutionsRecorded] = getSituation(solutions[s], l);		//Gets the inputs at the time that that situation was recorded.
+							inputs[solutionsRecorded] = getSituation(solutions[s], l);					//Gets the inputs at the time that that situation was recorded.
 							outputs[solutionsRecorded] = getOutputNumber(solutions[s].charAt(l));		//Records the given output (move) for that situation in the solution string.
 							solutionsRecorded += 1;
 						}
@@ -124,9 +148,9 @@ public class ReadSolutions {
 		return inputs;
 	}
 
-	public double[] getSituation(String solution, int move){							//Gets the inputs at the time that a particular move was performed, in the String solution.
+	public static int[] getSituation(String solution, int move){							//Gets the inputs at the time that a particular move was performed, in the String solution.
 
-		double[] situation = new double[5];	//Order: [0] = up, [1] = down, [2] = left, [3] = right, [4] = lastOutput. 0 = open block, 1 = filled block.
+		int[] situation = new int[5];	//Order: [0] = up, [1] = down, [2] = left, [3] = right, [4] = lastOutput. 0 = open block, 1 = filled block.
 
 		int rightMoves = 0;
 		int leftMoves = 0;
@@ -157,7 +181,7 @@ public class ReadSolutions {
 
 		if(pX - 1 > 0){						//If you're not at the left edge of the map.	
 			situation[2] = map[pX-1][pY];	//left of you
-			//if(situation[2] == Constants.MAP_WIN){ situation[2] = Constants.MAP_SPACE; }
+			if(situation[2] == Constants.MAP_WIN){ situation[2] = Constants.MAP_SPACE; }
 		}else{	situation[2] = Constants.MAP_BLOCK;}	
 
 
@@ -182,8 +206,8 @@ public class ReadSolutions {
 		return outputs;
 	}
 
-	public double[] getOutputNumber(char outputnumber){	//Gets the number version of the output letter.		0,0=u;	0,1=ed;	1,0=l;	1,1=r
-		double[] out = new double[2];
+	public static int[] getOutputNumber(char outputnumber){	//Gets the number version of the output letter.		0,0=u;	0,1=ed;	1,0=l;	1,1=r
+		int[] out = new int[2];
 
 		if(outputnumber == 'u'){//11 = u; 00 = d; 10 = l; 01 = r
 			out[0] = Constants.positive;
