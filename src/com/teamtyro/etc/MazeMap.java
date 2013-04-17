@@ -52,9 +52,10 @@ public class MazeMap {
 		int inc = 0;
 		
 		
-		int actions[] = subject.getActions(0);
-		for(int i=0; i<actions.length; i++) {
-			switch(actions[i]) {
+		String actions = subject.getActionAsString();
+		System.out.printf("%s\n", actions);
+		for(int i=0; i<actions.length(); i++) {
+			switch(actions.charAt(i)) {
 			case 'l':
 				x--;
 				break;

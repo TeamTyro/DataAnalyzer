@@ -74,6 +74,15 @@ public class TestSubject {
 		return actions[s_x][s_play];
 	}
 	
+	public String getActionAsString() {
+		String out = "";
+		for(int i=0; i<actions[0].length; i++) {
+			out = out + actions[0][i];
+		}
+		
+		return out;
+	}
+	
 	public int getGender() {
 		return gender;
 	}
