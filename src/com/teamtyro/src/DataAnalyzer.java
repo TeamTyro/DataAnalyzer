@@ -39,7 +39,24 @@ public class DataAnalyzer {
 	public static void begin(){
 		setUpScreen();
 		
-		for(int s = 0; s < r.solutions.length; s++){	//Prints out all of the solutions
+		
+		
+		
+		
+		int counter = 0;					//For replaying purposes.
+		resetMap();
+		while(counter < solution.length()){
+			GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);	// Clears screen and depth buffer	
+			render();
+
+			replayGame(solution,counter);
+			sleep(frameSpeed);
+
+			Display.update();
+			counter += 1;
+		}
+		sleep(1000);
+		/*for(int s = 0; s < r.solutions.length; s++){	//Prints out all of the solutions
 			System.out.println(r.solutions[s]);
 		}
 		
@@ -77,7 +94,7 @@ public class DataAnalyzer {
 				}
 			}
 		}
-
+*/
 		printGraphics();
 		
 		
@@ -90,7 +107,6 @@ public class DataAnalyzer {
 	
 	
 	private static void printGraphics(){
-
 		int solutionCounter = 0;
 		for(int in0 = 0; in0 <= 1; in0++){								//in0	block above
 			for(int in1 = 0; in1 <= 1; in1++){							//in1	block below
@@ -103,9 +119,9 @@ public class DataAnalyzer {
 									actionPerformed = true;
 								}
 							}		
-							if(actionPerformed = true){					//If an action was indeed performed, continue with the printing of graphics for that situation.
+							if(actionPerformed){					//If an action was indeed performed, continue with the printing of graphics for that situation.
 								System.out.println("//////////////////////////////////////////////////////////////");
-								
+								System.out.println("#"+solutionCounter+": "+in0+" "+in1+" "+in2+" "+in3+" "+in4);
 								
 								if(in0 == 1){			//Block above
 									System.out.println("                    "+r.tallyInputs[in0][in1][in2][in3][in4][0]);	//Take out
@@ -144,9 +160,8 @@ public class DataAnalyzer {
 								}
 							
 								
-								
 							}
-							
+							solutionCounter++;
 							
 						}
 					}
