@@ -13,15 +13,16 @@ import FileReading.ReadSolutions;
 
 public class DataAnalyzer {
 	
+	//New Variables, specific for the data analyzing aspects of this program.//
+	public static int[][][][][][] tally = new int[2][2][2][2][4][4];		
+	private static ReadSolutions r;
 	
-	public static String 		mapFile = "map1.txt";
-	
-	private static int[][] 		map;							// Universal map array [x left = 0][y, top = 0] Returns a constant for what is
-	private static int[][]		tally = new int[64][4];	//For each situation [0-63] then show us the tally for people who went up [0], down[1], left[2], right[3].
+	//Original COLORMAZEGAME variables//
+	private static int[][] 		map;										// Universal map array [x left = 0][y, top = 0] Returns a constant for what is
+	public static String 		mapFile = "map1.txt";		
+	public static int frameSpeed = 0;										//How  many miliseconds to wait between frames.
 	public static int		 	pX;
 	public static int 			pY;
-	
-	public static ReadSolutions	r;
 	public static Random 		generator = new Random();
 	
 	
@@ -45,56 +46,48 @@ public class DataAnalyzer {
 		
 		int counter = 0;					//For replaying purposes.
 		resetMap();
-		while(counter < solution.length()){
-			GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);	// Clears screen and depth buffer	
-			render();
+		while(counter < r.solutions.length){
+			System.out.println(r.solutions[counter]);
+			for(int i = 0; map[pX][pY] != Constants.MAP_WIN; i++){
+				//GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);		// Clears screen and depth buffer	
+				//render();
+	
+				
+				
+				
+				int[] sol = getSituation(r.solutions[counter],i);
+				int numericalOutput = 0;
+				if(r.solutions[counter].charAt(i) == 'u'){ numericalOutput = 0;}
+				if(r.solutions[counter].charAt(i) == 'd'){ numericalOutput = 1;}
+				if(r.solutions[counter].charAt(i) == 'l'){ numericalOutput = 2;}
+				if(r.solutions[counter].charAt(i) == 'r'){ numericalOutput = 3;}
+				tally[sol[0]][sol[1]][sol[2]][sol[3]][sol[4]][numericalOutput] += 1;		
 
-			replayGame(solution,counter);
-			sleep(frameSpeed);
-
-			Display.update();
-			counter += 1;
-		}
-		sleep(1000);
-		/*for(int s = 0; s < r.solutions.length; s++){	//Prints out all of the solutions
-			System.out.println(r.solutions[s]);
-		}
-		
-		//Possible solutions: in0:up; in1:down; in2:left; in3:right; in4: lastOutput.
-		//in0: 0,1;	in1: 0,1;	in2: 0,1;	in3: 0,1;	in4: 0,1,2,3;	
-		int solutionCounter = 0;
-		for(int in0 = 0; in0 <= 1; in0++){								//in0	block above
-			for(int in1 = 0; in1 <= 1; in1++){							//in1	block below
-				for(int in2 = 0; in2 <=1; in2++){						//in2	block left
-					for(int in3 = 0; in3 <=1; in3++){					//in3	block right
-						for(int in4 = 0; in4 <= 3; in4++){				//in4	last move (up,down,left, or right)
-							System.out.println("#"+solutionCounter+": "+in0+" "+in1+" "+in2+" "+in3+" "+in4);
-							solutionCounter++;									//Keeps track of what solution key is being printed. Aesthetic only.
-							
-							if(r.tallyInputs[in0][in1][in2][in3][in4][0] != 0){	
-								System.out.println("		Action: UP 		"+r.tallyInputs[in0][in1][in2][in3][in4][0]);
-								tally[solutionCounter][0] = r.tallyInputs[in0][in1][in2][in3][in4][0];
-							}
-							if(r.tallyInputs[in0][in1][in2][in3][in4][1] != 0){	
-								System.out.println("		Action: DOWN 	"+r.tallyInputs[in0][in1][in2][in3][in4][1]);
-								tally[solutionCounter][0] = r.tallyInputs[in0][in1][in2][in3][in4][1];
-							}
-							if(r.tallyInputs[in0][in1][in2][in3][in4][2] != 0){	
-								System.out.println("		Action: LEFT 	"+r.tallyInputs[in0][in1][in2][in3][in4][2]);
-								tally[solutionCounter][0] = r.tallyInputs[in0][in1][in2][in3][in4][2];
-							}
-							
-							if(r.tallyInputs[in0][in1][in2][in3][in4][3] != 0){	
-								System.out.println("		Action: RIGHT	"+r.tallyInputs[in0][in1][in2][in3][in4][3]);
-								tally[solutionCounter][0] = r.tallyInputs[in0][in1][in2][in3][in4][3];
-							}
-							
-						}
-					}
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				replayGame(r.solutions[counter],i);
+				if(map[pX][pY] == Constants.MAP_BLOCK){									//If the move ran it into a block.
+					System.out.println("BLOODY MURDER! INVALID SOLUTION!!!!!");
+					sleep(10000);
 				}
+				sleep(frameSpeed);
+				
+				//Display.update();
 			}
+			resetMap();
+			counter += 1;
+			
 		}
-*/
 		printGraphics();
 		
 		
@@ -115,7 +108,7 @@ public class DataAnalyzer {
 						for(int in4 = 0; in4 <= 3; in4++){				//in4	last move (up,down,left, or right)
 							boolean actionPerformed = false;			//If there was an action, then actually draw out the situation.
 							for(int in5 = 0; in5 <=3; in5++){			//Finds out if something was indeed performed.
-								if(r.tallyInputs[in0][in1][in2][in3][in4][in5] != 0){
+								if(tally[in0][in1][in2][in3][in4][in5] != 0){
 									actionPerformed = true;
 								}
 							}		
@@ -124,42 +117,57 @@ public class DataAnalyzer {
 								System.out.println("#"+solutionCounter+": "+in0+" "+in1+" "+in2+" "+in3+" "+in4);
 								
 								if(in0 == 1){			//Block above
-									System.out.println("                    "+r.tallyInputs[in0][in1][in2][in3][in4][0]);	//Take out
+									System.out.println("                    "+tally[in0][in1][in2][in3][in4][0]);	//Take out
 									System.out.println("		   [X]");		//Above
 	
 								}else{					//Space above
-									System.out.println("                    "+r.tallyInputs[in0][in1][in2][in3][in4][0]);
+									System.out.println("                    "+tally[in0][in1][in2][in3][in4][0]);
 									System.out.println("		   [ ]");		//Above
 								}
 								
 								
 								if(in2 == 1){			//Block Left
-									System.out.printf("            "+r.tallyInputs[in0][in1][in2][in3][in4][2]);			//Take out
+									System.out.printf("            "+tally[in0][in1][in2][in3][in4][2]);			//Take out
 									System.out.printf("	[X]   ");		//Left	//System.out.printf("		[X]   ");		//Left
 								}else{					//Space Left
-									System.out.printf("            "+r.tallyInputs[in0][in1][in2][in3][in4][2]);
+									System.out.printf("            "+tally[in0][in1][in2][in3][in4][2]);
 									System.out.printf("	[ ]   ");		//Left
 								}
 								
 								
 								if(in3 == 1){			//Block Right
 									System.out.printf("[X]");		//Right
-									System.out.printf("  "+r.tallyInputs[in0][in1][in2][in3][in4][3]+"\n");					//Take out
+									System.out.printf("  "+tally[in0][in1][in2][in3][in4][3]+"\n");					//Take out
 								}else{					//Space Right
 									System.out.printf("[ ]");		//Right	
-									System.out.printf("  "+r.tallyInputs[in0][in1][in2][in3][in4][3]+"\n");
+									System.out.printf("  "+tally[in0][in1][in2][in3][in4][3]+"\n");
 								}
 								
 								
 								if(in1 == 1){			//Block Below
 									System.out.println("		   [X]");		//Below
-									System.out.println("                    "+r.tallyInputs[in0][in1][in2][in3][in4][1]);	//Take out
+									System.out.println("                    "+tally[in0][in1][in2][in3][in4][1]);	//Take out
 								}else{					//Space Below
 									System.out.println("		   [ ]");		//Below
-									System.out.println("                    "+r.tallyInputs[in0][in1][in2][in3][in4][1]);
+									System.out.println("                    "+tally[in0][in1][in2][in3][in4][1]);
 								}
-							
 								
+								System.out.printf("Last Move: ");
+								switch(in4){
+								
+								case 0:
+									System.out.println("UP\n");
+									break;
+								case 1:
+									System.out.println("DOWN\n");
+									break;
+								case 2:
+									System.out.println("LEFT\n");
+									break;
+								case 3:
+									System.out.println("RIGHT\n");
+									break;
+								}
 							}
 							solutionCounter++;
 							
@@ -174,6 +182,62 @@ public class DataAnalyzer {
 		
 		
 		
+	}
+	
+	public static int[] getSituation(String solution, int move){							//Gets the inputs at the time that a particular move was performed, in the String solution.
+
+		int[] situation = new int[5];	//Order: [0] = up, [1] = down, [2] = left, [3] = right, [4] = lastOutput. 0 = open block, 1 = filled block.
+
+		
+		if(pY + 1 < Constants.MAP_HEIGHT){			//If you're not at the bottom of the map.
+			situation[1] = map[pX][pY+1];			//below you
+		}else{ 
+			situation[1] = Constants.MAP_BLOCK;	
+		}	
+
+		
+		if(pY - 1 >= 0){								//If you're not at the top of the map.
+			situation[0] = map[pX][pY-1];			//above you
+			if(situation[0] == Constants.MAP_START){ 
+				situation[0] = Constants.MAP_SPACE; 
+			}
+		}else{	
+			situation[0] = Constants.MAP_BLOCK;
+		}	
+
+		
+		if(pX + 1 < Constants.MAP_WIDTH){			//If you're not at the right edge of the map.
+			situation[3] = map[pX+1][pY];			//right of you
+		}else{	
+			situation[3] = Constants.MAP_BLOCK;
+		}	
+
+		
+		if(pX - 1 >= 0){								//If you're not at the left edge of the map.	
+			situation[2] = map[pX-1][pY];			//left of you
+			if(situation[2] == Constants.MAP_WIN){ 
+				situation[2] = Constants.MAP_SPACE; 
+			}
+		}else{	
+			situation[2] = Constants.MAP_BLOCK;
+		}	
+
+
+
+		if(move > 0){								//Finds the last move. Is recorded as: NO LAST MOVE = 0; 0 =u; 1/3=d; 2/3=l; 1=r
+			situation[4] = solution.charAt(move-1);
+			if(solution.charAt(move-1) == 'u'){	situation[4] = Constants.DIR_UP;}
+			if(solution.charAt(move-1) == 'd'){	situation[4] = Constants.DIR_DOWN;}
+			if(solution.charAt(move-1) == 'l'){	situation[4] = Constants.DIR_LEFT;}
+			if(solution.charAt(move-1) == 'r'){	situation[4] = Constants.DIR_RIGHT;}
+		}else{
+			situation[4] = Constants.DIR_UP;
+		}
+
+		//System.out.println("Solution: " +solution);
+		//System.out.println("Move: "+move+" "+solution.charAt(move)+" "+"	Up: "+situation[0]+"	Down: "+situation[1]+"	Left: "+situation[2]+"	Right: "+situation[3]+"	LastMove: "+situation[4]);
+		//System.out.println("pXpY("+pX+","+pY+")"+"	pXpY("+sX+","+sY+")");
+		return situation;
 	}
 	
 	private static void resetMap(){
