@@ -21,6 +21,9 @@ public class MazeMap {
 	}
 	
 	public int getDensity(int s_x, int s_y) {
+		if(map[s_x][s_y] == Constants.MAP_BLOCK) {
+			System.out.printf("DANGER WILL ROBINSON!\n");
+		}
 		return dMap[s_x][s_y];
 	}
 

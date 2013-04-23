@@ -101,6 +101,18 @@ public class DataAnalyzer {
 		GL11.glLoadIdentity();
 		GL11.glOrtho(0, 960, 0, 720, 1, -1);
 		GL11.glMatrixMode(GL11.GL_MODELVIEW);
+		
+		int value = 0;
+		for(int x=0; x<Constants.MAP_WIDTH; x++) {
+			for(int y=0; y<Constants.MAP_HEIGHT; y++) {
+				int curValue = maze.getDensity(x, y);
+				if(curValue > value) {
+					value = curValue;
+				}
+			}
+		}
+		
+		System.out.printf("VALUE: %d\n", value);
 
 		// Start main loop
 		while(!Display.isCloseRequested()) {
@@ -156,7 +168,7 @@ public class DataAnalyzer {
 					GL11.glEnd();
 					break;
 				case Constants.MAP_SPACE:
-					GL11.glColor3f(0, 0, (float)maze.getDensity(x,y)/(float)50);
+					GL11.glColor3f(0, 0, (float)maze.getDensity(x,y)/(float)210);
 					GL11.glBegin(GL11.GL_QUADS);
 						GL11.glVertex2f((3*bs)+(x*bs)   , (18*bs)-(y*bs)   );
 						GL11.glVertex2f((3*bs)+(x*bs)+bs, (18*bs)-(y*bs)   );
