@@ -4,7 +4,7 @@ import com.teamtyro.etc.Constants;
 
 public class TestSubject {
 	private static int ethnicity, age, gender, playCount;
-	private static int actions[][];
+	private static String actions[];
 	
 	public TestSubject() {
 		
@@ -30,7 +30,7 @@ public class TestSubject {
 		} else if(sEthnicity.equals("Prefer not to say")) {
 			ethnicity =  Constants.ETH_NONE;
 		} else {
-			//ethnicity =  ERROR;
+			ethnicity =  Constants.ERROR;
 		}
 		
 		if(sAge.equals("Under 11")) {
@@ -64,23 +64,14 @@ public class TestSubject {
 		}
 		
 		playCount = sPlayCount;
-		actions = new int[sPlayCount][sActions.length()];
+		actions = new String[sPlayCount];
 		for(int i=0; i<sActions.length(); i++) {
-			actions[0][i] = sActions.charAt(i);
+			actions[0] = sActions;
 		}
 	}
 	
 	public int getAction(int s_x, int s_play) {
-		return actions[s_x][s_play];
-	}
-	
-	public String getActionAsString() {
-		String out = "";
-		for(int i=0; i<actions[0].length; i++) {
-			out = out + actions[0][i];
-		}
-		
-		return out;
+		return actions[s_play].charAt(s_x);
 	}
 	
 	public int getGender() {
@@ -95,7 +86,7 @@ public class TestSubject {
 		return age;
 	}
 	
-	public int[] getActions(int playNumb) {
+	public String getActions(int playNumb) {
 		return actions[playNumb];
 	}
 }

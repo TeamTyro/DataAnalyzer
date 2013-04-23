@@ -21,8 +21,8 @@ public class DataAnalyzer {
 	public static void main(String[] args) {
 		System.out.printf("DataAnalyzer V 0.0.1\n");
 		
-		subjects = new TestSubject [10];
-		parseTextyText("/home/xavi/Desktop/game_first_run.txt");
+		subjects = new TestSubject [50];
+		parseTextyText("game_first_run.txt");
 		
 		map = new int[16][16];
 		maze = new MazeMap();
@@ -61,7 +61,7 @@ public class DataAnalyzer {
 	    } catch(IOException ex) { return; }
 	    
 	    int charsRead = 1;
-	    for(int j=0; j<10; j++) {
+	    for(int j=0; j<50; j++) {
 	    	String input[] = new String [10];
 	    	for(int i=0; i<10; i++) {
 	    		input[i] = "";
@@ -156,7 +156,13 @@ public class DataAnalyzer {
 					GL11.glEnd();
 					break;
 				case Constants.MAP_SPACE:
-					GL11.glColor3f(0, (float)maze.getDensity(x,y)/(float)10, 0);
+					GL11.glColor3f(0, 0, (float)maze.getDensity(x,y)/(float)50);
+					GL11.glBegin(GL11.GL_QUADS);
+						GL11.glVertex2f((3*bs)+(x*bs)   , (18*bs)-(y*bs)   );
+						GL11.glVertex2f((3*bs)+(x*bs)+bs, (18*bs)-(y*bs)   );
+						GL11.glVertex2f((3*bs)+(x*bs)+bs, (18*bs)-(y*bs)+bs);
+						GL11.glVertex2f((3*bs)+(x*bs)   , (18*bs)-(y*bs)+bs);
+					GL11.glEnd();
 					break;
 				}
 			}

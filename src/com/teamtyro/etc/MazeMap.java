@@ -13,6 +13,7 @@ public class MazeMap {
 	
 	public MazeMap() {
 		map = new int [Constants.MAP_WIDTH][Constants.MAP_HEIGHT];
+		dMap = new int [Constants.MAP_WIDTH][Constants.MAP_HEIGHT];
 	}
 
 	public int getSpace(int s_x, int s_y) {
@@ -35,11 +36,11 @@ public class MazeMap {
 					break;
 				case 's':
 					map[x][y] = Constants.MAP_START;
+					sX = x;
+					sY = y;
 					break;
 				case 'w':
 					map[x][y] = Constants.MAP_WIN;
-					sX = x;
-					sY = y;
 					break;
 				}
 			}
@@ -52,8 +53,7 @@ public class MazeMap {
 		int inc = 0;
 		
 		
-		String actions = subject.getActionAsString();
-		System.out.printf("%s\n", actions);
+		String actions = subject.getActions(0);
 		for(int i=0; i<actions.length(); i++) {
 			switch(actions.charAt(i)) {
 			case 'l':
@@ -63,15 +63,18 @@ public class MazeMap {
 				x++;
 				break;
 			case 'u':
-				y++;
-				break;
-			case 'd':
 				y--;
 				break;
+			case 'd':
+				y++;
+				break;
 			}
+			
+			if(map[x][y] == Constants.MAP_BLOCK) {
+				System.out.printf("OH GOD OH NO! NO PLEASE GOD NO GOD PLEASE NO!\n");
+			}
+			dMap[x][y]++;
 		}
-		
-		dMap[x][y]++;
 	}
 
 	public boolean loadMap(URL s_fileURL) {
