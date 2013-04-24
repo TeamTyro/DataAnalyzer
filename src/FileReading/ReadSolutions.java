@@ -74,7 +74,7 @@ public class ReadSolutions {
 	}
 
 	
-	public static void getRawInputArray(){
+	public static int[][][][][][] getRawInputArray(){
 		
 		
 		for(int s = 0; s < solutions.length; s++){
@@ -89,6 +89,7 @@ public class ReadSolutions {
 				tallyInputs[sol[0]][sol[1]][sol[2]][sol[3]][sol[4]][numericalOutput] += 1;		//Adds 1 to the tally for the given output of that person, for that given input set.
 			}
 		}
+		return tallyInputs;
 	}
 	
 	
@@ -173,7 +174,7 @@ public class ReadSolutions {
 			situation[1] = map[pX][pY+1];	//below you
 		}else{ situation[1] = Constants.MAP_BLOCK;	}	
 
-		if(pY - 1 > 0){						//If you're not at the top of the map.
+		if(pY - 1 >= 0){						//If you're not at the top of the map.
 			situation[0] = map[pX][pY-1];	//above you
 			if(situation[0] == Constants.MAP_START){ situation[0] = Constants.MAP_SPACE; }
 		}else{	situation[0] = Constants.MAP_BLOCK;}	
@@ -182,7 +183,7 @@ public class ReadSolutions {
 			situation[3] = map[pX+1][pY];	//right of you
 		}else{	situation[3] = Constants.MAP_BLOCK;}	
 
-		if(pX - 1 > 0){						//If you're not at the left edge of the map.	
+		if(pX - 1 >= 0){						//If you're not at the left edge of the map.	
 			situation[2] = map[pX-1][pY];	//left of you
 			if(situation[2] == Constants.MAP_WIN){ situation[2] = Constants.MAP_SPACE; }
 		}else{	situation[2] = Constants.MAP_BLOCK;}	

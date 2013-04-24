@@ -40,16 +40,49 @@ public class DataAnalyzer {
 	
 	public static void begin(){
 		//setUpScreen();
-		getTally();
+		tally = r.getRawInputArray();
+		//getTally();
 		getPercent();
 		printGraphics();
 		
+		double allPercentTotals = 0;
+		double allHighestPossiblePercentTotals = 0;
+		for(int i = 0; i < r.testSolutions.length; i++){						//Goes through each solution in the txt
+			
+			String test = r.testSolutions[i];									//What string to test
+			System.out.println(r.testSolutions[i]);								//Prints the solution
+			double percentTotal = 0;											//Will store the added percent of humanity for each solution, so that we can find the average later.
+			double highestPossiblePercentTotal = 0;								//Will store the added percent of humanity that each solution COULD POSSIBLY HAVE HAD so that I can find the average later.
+			
+			for(int j = 0; j < r.testSolutions[i].length(); j++){				//Goes through each character of the solution	
+			
+				int[] sit = r.getSituation(test, j);
+				percentTotal += percent[sit[0]][sit[1]][sit[2]][sit[3]][sit[4]][getNumericalOutput(test.charAt(j))];					//Adds the percent of choice from that move to the total.
+				
+				double highestPercent = -1;
+				for(int k = 0; k <= 3; k++){									//Goes through each move for that situation, and gets the highest percent.
+					if(percent[sit[0]][sit[1]][sit[2]][sit[3]][sit[4]][k] > highestPercent){	highestPercent = percent[sit[0]][sit[1]][sit[2]][sit[3]][sit[4]][k];} 
+				}
+				
+				highestPossiblePercentTotal += highestPercent;
+				//System.out.println(percent[sit[0]][sit[1]][sit[2]][sit[3]][sit[4]][getNumericalOutput(test.charAt(j))]+ " "+percentTotal);
+			
+			}
+			
+			System.out.println("Percent for run: "+percentTotal/(test.length())+"     Possible percent for run: "+highestPossiblePercentTotal/(test.length()));						//Prints the percent of human'ness for that particular solutioon.
+			allPercentTotals += (percentTotal/(test.length()));
+			allHighestPossiblePercentTotals += (highestPossiblePercentTotal/(test.length()));
+			
+		}
+		
+		double finalAveragePercent = allPercentTotals/r.testSolutions.length;
+		double finalAveragePossiblePercent = allHighestPossiblePercentTotals/r.testSolutions.length;
+		System.out.println("Final Average Percent: "+finalAveragePercent+"     Final Possible Average Percent: "+finalAveragePossiblePercent);
 	}
 	
 	
 	
-	
-	
+
 	
 	private static void printGraphics(){										//Prints out all of the results from the data analysis.
 		int solutionCounter = 0;
@@ -163,11 +196,11 @@ public class DataAnalyzer {
 		}
 	}
 	
-	public static void getTally(){												//Fills up the tally array with the correct amount of tallys for each situation.
+/*	public static void getTally(){												//Fills up the tally array with the correct amount of tallys for each situation.
 		int counter = 0;					//For replaying purposes.
 		resetMap();
 		while(counter < r.solutions.length){
-			System.out.println(r.solutions[counter]);
+			//System.out.println(r.solutions[counter]);
 			for(int i = 0; map[pX][pY] != Constants.MAP_WIN; i++){
 				if(frameSpeed > 0){															//If framespeed is actually not zero, then waste time to display all the pretty visuals.
 					GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);		// Clears screen and depth buffer	
@@ -175,29 +208,8 @@ public class DataAnalyzer {
 					sleep(frameSpeed);
 					Display.update();
 				}
-	
-				
-				
-				
 				int[] sol = getSituation(r.solutions[counter],i);
-				int numericalOutput = 0;
-				if(r.solutions[counter].charAt(i) == 'u'){ numericalOutput = 0;}
-				if(r.solutions[counter].charAt(i) == 'd'){ numericalOutput = 1;}
-				if(r.solutions[counter].charAt(i) == 'l'){ numericalOutput = 2;}
-				if(r.solutions[counter].charAt(i) == 'r'){ numericalOutput = 3;}
-				tally[sol[0]][sol[1]][sol[2]][sol[3]][sol[4]][numericalOutput] += 1;		
-
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
+				tally[sol[0]][sol[1]][sol[2]][sol[3]][sol[4]][getNumericalOutput(r.solutions[counter].charAt(i))] += 1;					
 				
 				replayGame(r.solutions[counter],i);
 				if(map[pX][pY] == Constants.MAP_BLOCK){									//If the move ran it into a block.
@@ -210,6 +222,15 @@ public class DataAnalyzer {
 			counter += 1;
 			
 		}
+	}*/
+	
+	public static int getNumericalOutput(char s){										//Returns 0 for up, 1 for down, 2 for left, 3 for right
+		int numericalOutput = -1;
+		if(s == 'u'){ numericalOutput = 0;}
+		if(s == 'd'){ numericalOutput = 1;}
+		if(s == 'l'){ numericalOutput = 2;}
+		if(s == 'r'){ numericalOutput = 3;}
+		return numericalOutput;
 	}
 	
 	public static int[] getSituation(String solution, int move){				//Gets the inputs at the time that a particular move was performed, in the String solution.
