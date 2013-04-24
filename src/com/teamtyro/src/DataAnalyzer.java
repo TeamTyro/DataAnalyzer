@@ -6,6 +6,7 @@ import java.io.FileReader;
 import java.io.IOException;
 
 import org.lwjgl.LWJGLException;
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
@@ -17,6 +18,8 @@ public class DataAnalyzer {
 	private static TestSubject subjects[];
 	private static int map[][];
 	private static MazeMap maze;
+	
+	private static int maxDensity;
 	
 	public static void main(String[] args) {
 		System.out.printf("DataAnalyzer V 0.0.1\n");
@@ -89,7 +92,7 @@ public class DataAnalyzer {
 	
 	private static void begin() {
 		try {
-			Display.setDisplayMode(new DisplayMode(960,720));
+			Display.setDisplayMode(new DisplayMode(640,640));
 			Display.create();
 		} catch (LWJGLException e) {
 			e.printStackTrace();
@@ -99,20 +102,12 @@ public class DataAnalyzer {
 		// Init OpenGL
 		GL11.glMatrixMode(GL11.GL_PROJECTION);
 		GL11.glLoadIdentity();
-		GL11.glOrtho(0, 960, 0, 720, 1, -1);
+		GL11.glOrtho(0, 640, 0, 640, 1, -1);
 		GL11.glMatrixMode(GL11.GL_MODELVIEW);
 		
-		int value = 0;
-		for(int x=0; x<Constants.MAP_WIDTH; x++) {
-			for(int y=0; y<Constants.MAP_HEIGHT; y++) {
-				int curValue = maze.getDensity(x, y);
-				if(curValue > value) {
-					value = curValue;
-				}
-			}
-		}
+		maxDensity = maze.getMaxDensity();
 		
-		System.out.printf("VALUE: %d\n", value);
+		System.out.printf("VALUE: %d\n", maxDensity);
 
 		// Start main loop
 		while(!Display.isCloseRequested()) {
@@ -121,6 +116,7 @@ public class DataAnalyzer {
 
 			// Rendering
 			render();
+			checkKeys();
 
 			Display.update();
 		}
@@ -131,10 +127,10 @@ public class DataAnalyzer {
 	private static void render() {
 		float bs = 32;
 		GL11.glBegin(GL11.GL_LINE_LOOP);
-			GL11.glVertex2f( 3*bs, 3*bs);
-			GL11.glVertex2f(19*bs, 3*bs);
-			GL11.glVertex2f(19*bs,19*bs);
-			GL11.glVertex2f( 3*bs,19*bs);
+			GL11.glVertex2f( 3*bs, 3*bs-1);
+			GL11.glVertex2f(19*bs, 3*bs-1);
+			GL11.glVertex2f(19*bs,19*bs+0);
+			GL11.glVertex2f( 3*bs,19*bs+0);
 		GL11.glEnd();
 		
 		for(int y=0; y<Constants.MAP_HEIGHT; y++) {
@@ -168,7 +164,7 @@ public class DataAnalyzer {
 					GL11.glEnd();
 					break;
 				case Constants.MAP_SPACE:
-					GL11.glColor3f(0, 0, (float)maze.getDensity(x,y)/(float)210);
+					GL11.glColor3f(0, 0, (float)maze.getDensity(x,y)/(float)maxDensity);
 					GL11.glBegin(GL11.GL_QUADS);
 						GL11.glVertex2f((3*bs)+(x*bs)   , (18*bs)-(y*bs)   );
 						GL11.glVertex2f((3*bs)+(x*bs)+bs, (18*bs)-(y*bs)   );
@@ -177,6 +173,18 @@ public class DataAnalyzer {
 					GL11.glEnd();
 					break;
 				}
+			}
+		}
+	}
+	
+	private static void checkKeys() {
+		if(Keyboard.isKeyDown(Keyboard.KEY_1)) {
+			if(maxDensity > 0) {
+				maxDensity--;
+			}
+		} else if(Keyboard.isKeyDown(Keyboard.KEY_2)) {
+			if(maxDensity < maze.getMaxDensity()) {
+				maxDensity++;
 			}
 		}
 	}

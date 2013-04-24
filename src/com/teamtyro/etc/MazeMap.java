@@ -26,6 +26,22 @@ public class MazeMap {
 		}
 		return dMap[s_x][s_y];
 	}
+	
+	public int getMaxDensity() {
+		int value = 0;
+		for(int x=0; x<Constants.MAP_WIDTH; x++) {
+			for(int y=0; y<Constants.MAP_HEIGHT; y++) {
+				if(map[x][y] == Constants.MAP_SPACE) {
+					int curValue = getDensity(x, y);
+					if(curValue > value) {
+						value = curValue;
+					}
+				}
+			}
+		}
+		
+		return value;
+	}
 
 	public void loadConstMap(String sMap) {
 		for(int y=0; y<Constants.MAP_HEIGHT; y++) {
