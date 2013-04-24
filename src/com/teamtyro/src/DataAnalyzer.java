@@ -12,6 +12,7 @@ import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
 
 import com.teamtyro.etc.Constants;
+import com.teamtyro.etc.DrawText;
 import com.teamtyro.etc.MazeMap;
 
 public class DataAnalyzer {
@@ -21,8 +22,12 @@ public class DataAnalyzer {
 	
 	private static int maxDensity;
 	
+	private static DrawText dText;
+	
 	public static void main(String[] args) {
 		System.out.printf("DataAnalyzer V 0.0.1\n");
+		
+		dText = new DrawText("0123456789");
 		
 		subjects = new TestSubject [50];
 		parseTextyText("game_first_run.txt");
@@ -91,8 +96,9 @@ public class DataAnalyzer {
 	}
 	
 	private static void begin() {
+		int size = 640;
 		try {
-			Display.setDisplayMode(new DisplayMode(640,640));
+			Display.setDisplayMode(new DisplayMode(size,size));
 			Display.create();
 		} catch (LWJGLException e) {
 			e.printStackTrace();
@@ -102,7 +108,7 @@ public class DataAnalyzer {
 		// Init OpenGL
 		GL11.glMatrixMode(GL11.GL_PROJECTION);
 		GL11.glLoadIdentity();
-		GL11.glOrtho(0, 640, 0, 640, 1, -1);
+		GL11.glOrtho(0, (float)size, 0, (float)size, 1, -1);
 		GL11.glMatrixMode(GL11.GL_MODELVIEW);
 		
 		maxDensity = maze.getMaxDensity();
@@ -127,10 +133,10 @@ public class DataAnalyzer {
 	private static void render() {
 		float bs = 32;
 		GL11.glBegin(GL11.GL_LINE_LOOP);
-			GL11.glVertex2f( 3*bs, 3*bs-1);
-			GL11.glVertex2f(19*bs, 3*bs-1);
-			GL11.glVertex2f(19*bs,19*bs+0);
-			GL11.glVertex2f( 3*bs,19*bs+0);
+			GL11.glVertex2f( 1*bs, 3*bs-1);
+			GL11.glVertex2f(17*bs, 3*bs-1);
+			GL11.glVertex2f(17*bs,19*bs+0);
+			GL11.glVertex2f( 1*bs,19*bs+0);
 		GL11.glEnd();
 		
 		for(int y=0; y<Constants.MAP_HEIGHT; y++) {
@@ -139,42 +145,48 @@ public class DataAnalyzer {
 				case Constants.MAP_BLOCK:
 					GL11.glColor3f(1, 0, 0);
 					GL11.glBegin(GL11.GL_QUADS);
-						GL11.glVertex2f((3*bs)+(x*bs)   , (18*bs)-(y*bs)   );
-						GL11.glVertex2f((3*bs)+(x*bs)+bs, (18*bs)-(y*bs)   );
-						GL11.glVertex2f((3*bs)+(x*bs)+bs, (18*bs)-(y*bs)+bs);
-						GL11.glVertex2f((3*bs)+(x*bs)   , (18*bs)-(y*bs)+bs);
+						GL11.glVertex2f((1*bs)+(x*bs)   , (18*bs)-(y*bs)   );
+						GL11.glVertex2f((1*bs)+(x*bs)+bs, (18*bs)-(y*bs)   );
+						GL11.glVertex2f((1*bs)+(x*bs)+bs, (18*bs)-(y*bs)+bs);
+						GL11.glVertex2f((1*bs)+(x*bs)   , (18*bs)-(y*bs)+bs);
 					GL11.glEnd();
 					break;
 				case Constants.MAP_START:
 					GL11.glColor3f(1, 1, 0);
 					GL11.glBegin(GL11.GL_QUADS);
-						GL11.glVertex2f((3*bs)+(x*bs)   , (18*bs)-(y*bs)   );
-						GL11.glVertex2f((3*bs)+(x*bs)+bs, (18*bs)-(y*bs)   );
-						GL11.glVertex2f((3*bs)+(x*bs)+bs, (18*bs)-(y*bs)+bs);
-						GL11.glVertex2f((3*bs)+(x*bs)   , (18*bs)-(y*bs)+bs);
+						GL11.glVertex2f((1*bs)+(x*bs)   , (18*bs)-(y*bs)   );
+						GL11.glVertex2f((1*bs)+(x*bs)+bs, (18*bs)-(y*bs)   );
+						GL11.glVertex2f((1*bs)+(x*bs)+bs, (18*bs)-(y*bs)+bs);
+						GL11.glVertex2f((1*bs)+(x*bs)   , (18*bs)-(y*bs)+bs);
 					GL11.glEnd();
 					break;
 				case Constants.MAP_WIN:
 					GL11.glColor3f(0, 1, 0);
 					GL11.glBegin(GL11.GL_QUADS);
-						GL11.glVertex2f((3*bs)+(x*bs)   , (18*bs)-(y*bs)   );
-						GL11.glVertex2f((3*bs)+(x*bs)+bs, (18*bs)-(y*bs)   );
-						GL11.glVertex2f((3*bs)+(x*bs)+bs, (18*bs)-(y*bs)+bs);
-						GL11.glVertex2f((3*bs)+(x*bs)   , (18*bs)-(y*bs)+bs);
+						GL11.glVertex2f((1*bs)+(x*bs)   , (18*bs)-(y*bs)   );
+						GL11.glVertex2f((1*bs)+(x*bs)+bs, (18*bs)-(y*bs)   );
+						GL11.glVertex2f((1*bs)+(x*bs)+bs, (18*bs)-(y*bs)+bs);
+						GL11.glVertex2f((1*bs)+(x*bs)   , (18*bs)-(y*bs)+bs);
 					GL11.glEnd();
 					break;
 				case Constants.MAP_SPACE:
 					GL11.glColor3f(0, 0, (float)maze.getDensity(x,y)/(float)maxDensity);
 					GL11.glBegin(GL11.GL_QUADS);
-						GL11.glVertex2f((3*bs)+(x*bs)   , (18*bs)-(y*bs)   );
-						GL11.glVertex2f((3*bs)+(x*bs)+bs, (18*bs)-(y*bs)   );
-						GL11.glVertex2f((3*bs)+(x*bs)+bs, (18*bs)-(y*bs)+bs);
-						GL11.glVertex2f((3*bs)+(x*bs)   , (18*bs)-(y*bs)+bs);
+						GL11.glVertex2f((1*bs)+(x*bs)   , (18*bs)-(y*bs)   );
+						GL11.glVertex2f((1*bs)+(x*bs)+bs, (18*bs)-(y*bs)   );
+						GL11.glVertex2f((1*bs)+(x*bs)+bs, (18*bs)-(y*bs)+bs);
+						GL11.glVertex2f((1*bs)+(x*bs)   , (18*bs)-(y*bs)+bs);
 					GL11.glEnd();
 					break;
 				}
 			}
 		}
+		
+		GL11.glPushMatrix();
+		GL11.glTranslated(5, 5, 0);
+		GL11.glScaled(50,50,0);
+		dText.draw();
+		GL11.glPopMatrix();
 	}
 	
 	private static void checkKeys() {
