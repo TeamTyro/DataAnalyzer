@@ -8,8 +8,10 @@ import java.util.Random;
 
 public class ReadSolutions {
 
-	public static String[] solutions;	//Holds a string of each solution
-	public static String file = "mapsolutions.txt";
+	public static String[] solutions;		//Holds a string of each solution
+	public static String[] testSolutions;	//Holds a string of each solution that will be tested.
+	//public static String solutionsFile = "mapsolutions.txt";
+	//public static String testSolutionsFile = "testSolutions.txt";
 	public static int totalMoves;
 	public static int[][][][][][] tallyInputs = new int[2][2][2][2][4][4];			
 	
@@ -23,16 +25,16 @@ public class ReadSolutions {
 	public static int sY;				//The y start position of the player
 	public static Constants constant = new Constants();
 
-	public ReadSolutions(String mapx){
+	public ReadSolutions(String mapx, String solutionsFile, String testSolutionsFile){
 		mapnumber = mapx;											//the name of the map file.
 		map = new int[Constants.MAP_WIDTH][Constants.MAP_HEIGHT];
 		getmapArray();
 		//System.out.println("////SOLUTION READER////");
-		solutions = readSolutions();	//Sets the solutions array to all of the data in the text file. solutions[solution#] = String of solution
-
+		solutions = readSolutions(solutionsFile);	//Sets the solutions array to all of the data in the text file. solutions[solution#] = String of solution
+		testSolutions = readSolutions(testSolutionsFile);
 	}
 
-	public static String[] readSolutions(){
+	public static String[] readSolutions(String file){
 		solutionsCount = 0;									//How many solutions there are.
 		totalMoves = 0;									//Total amount of moves from each solution added up.
 
@@ -71,6 +73,7 @@ public class ReadSolutions {
 		return textSolutions;
 	}
 
+	
 	public static void getRawInputArray(){
 		
 		

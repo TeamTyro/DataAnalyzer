@@ -1,5 +1,6 @@
 package com.teamtyro.src;
 
+import java.math.BigDecimal;
 import java.util.Random;
 
 import org.lwjgl.LWJGLException;
@@ -15,6 +16,7 @@ public class DataAnalyzer {
 	
 	//New Variables, specific for the data analyzing aspects of this program.//
 	public static int[][][][][][] tally = new int[2][2][2][2][4][4];		
+	public static double[][][][][][] percent = new double[2][2][2][2][4][4];	//Instead of holding the total people who turned x direction, it tells you what percent.		
 	private static ReadSolutions r;
 	
 	//Original COLORMAZEGAME variables//
@@ -32,65 +34,15 @@ public class DataAnalyzer {
 	public static void main(String[] args) {
 		resetMap();
 		printMaze(map);
-		r = new ReadSolutions(mapFile);
-		r.getRawInputArray();
+		r = new ReadSolutions(mapFile, "mapsolutions.txt", "testsolutions.txt");
 		begin();
 	}
 	
 	public static void begin(){
-		setUpScreen();
-		
-		
-		
-		
-		
-		int counter = 0;					//For replaying purposes.
-		resetMap();
-		while(counter < r.solutions.length){
-			System.out.println(r.solutions[counter]);
-			for(int i = 0; map[pX][pY] != Constants.MAP_WIN; i++){
-				//GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);		// Clears screen and depth buffer	
-				//render();
-	
-				
-				
-				
-				int[] sol = getSituation(r.solutions[counter],i);
-				int numericalOutput = 0;
-				if(r.solutions[counter].charAt(i) == 'u'){ numericalOutput = 0;}
-				if(r.solutions[counter].charAt(i) == 'd'){ numericalOutput = 1;}
-				if(r.solutions[counter].charAt(i) == 'l'){ numericalOutput = 2;}
-				if(r.solutions[counter].charAt(i) == 'r'){ numericalOutput = 3;}
-				tally[sol[0]][sol[1]][sol[2]][sol[3]][sol[4]][numericalOutput] += 1;		
-
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				
-				replayGame(r.solutions[counter],i);
-				if(map[pX][pY] == Constants.MAP_BLOCK){									//If the move ran it into a block.
-					System.out.println("BLOODY MURDER! INVALID SOLUTION!!!!!");
-					sleep(10000);
-				}
-				sleep(frameSpeed);
-				
-				//Display.update();
-			}
-			resetMap();
-			counter += 1;
-			
-		}
+		//setUpScreen();
+		getTally();
+		getPercent();
 		printGraphics();
-		
-		
 		
 	}
 	
@@ -99,7 +51,7 @@ public class DataAnalyzer {
 	
 	
 	
-	private static void printGraphics(){
+	private static void printGraphics(){										//Prints out all of the results from the data analysis.
 		int solutionCounter = 0;
 		for(int in0 = 0; in0 <= 1; in0++){								//in0	block above
 			for(int in1 = 0; in1 <= 1; in1++){							//in1	block below
@@ -115,6 +67,7 @@ public class DataAnalyzer {
 							if(actionPerformed){					//If an action was indeed performed, continue with the printing of graphics for that situation.
 								System.out.println("//////////////////////////////////////////////////////////////");
 								System.out.println("#"+solutionCounter+": "+in0+" "+in1+" "+in2+" "+in3+" "+in4);
+								System.out.println("UP: "+percent[in0][in1][in2][in3][in4][0]+"%     DOWN: "+percent[in0][in1][in2][in3][in4][1]+"%     LEFT: "+percent[in0][in1][in2][in3][in4][2]+"%     RIGHT: "+percent[in0][in1][in2][in3][in4][3]+"%\n");
 								
 								if(in0 == 1){			//Block above
 									System.out.println("                    "+tally[in0][in1][in2][in3][in4][0]);	//Take out
@@ -184,7 +137,82 @@ public class DataAnalyzer {
 		
 	}
 	
-	public static int[] getSituation(String solution, int move){							//Gets the inputs at the time that a particular move was performed, in the String solution.
+	public static void getPercent(){											//Fills up the percent array with processed data from the tally array.
+		
+		for(int in0 = 0; in0 <= 1; in0++){								//in0	block above
+			for(int in1 = 0; in1 <= 1; in1++){							//in1	block below
+				for(int in2 = 0; in2 <=1; in2++){						//in2	block left
+					for(int in3 = 0; in3 <=1; in3++){					//in3	block right
+						for(int in4 = 0; in4 <= 3; in4++){				//in4	last move (up,down,left, or right)
+							
+							double total = 0;
+							for(int in5 = 0; in5 <= 3; in5++){			//Finds the total tallies, in order to divide each possible solution's tally by total tallys.
+								total += tally[in0][in1][in2][in3][in4][in5];
+							}
+							if(total != 0){								//So that I don't divide by zero...
+								for(int in5 = 0; in5 <= 3; in5++){		//Goes through each out, and sets it as the percent of the total. Cool simple code, me gusta! p.s. I am so tired. It is finals week, and I should not be coding. Well. Toodleoo! To the next line I go...
+									percent[in0][in1][in2][in3][in4][in5] = round((double) tally[in0][in1][in2][in3][in4][in5]/total*100,2,BigDecimal.ROUND_HALF_UP);
+								}
+							}
+							
+							
+						}
+					}
+				}
+			}
+		}
+	}
+	
+	public static void getTally(){												//Fills up the tally array with the correct amount of tallys for each situation.
+		int counter = 0;					//For replaying purposes.
+		resetMap();
+		while(counter < r.solutions.length){
+			System.out.println(r.solutions[counter]);
+			for(int i = 0; map[pX][pY] != Constants.MAP_WIN; i++){
+				if(frameSpeed > 0){															//If framespeed is actually not zero, then waste time to display all the pretty visuals.
+					GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);		// Clears screen and depth buffer	
+					render();
+					sleep(frameSpeed);
+					Display.update();
+				}
+	
+				
+				
+				
+				int[] sol = getSituation(r.solutions[counter],i);
+				int numericalOutput = 0;
+				if(r.solutions[counter].charAt(i) == 'u'){ numericalOutput = 0;}
+				if(r.solutions[counter].charAt(i) == 'd'){ numericalOutput = 1;}
+				if(r.solutions[counter].charAt(i) == 'l'){ numericalOutput = 2;}
+				if(r.solutions[counter].charAt(i) == 'r'){ numericalOutput = 3;}
+				tally[sol[0]][sol[1]][sol[2]][sol[3]][sol[4]][numericalOutput] += 1;		
+
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				replayGame(r.solutions[counter],i);
+				if(map[pX][pY] == Constants.MAP_BLOCK){									//If the move ran it into a block.
+					System.out.println("BLOODY MURDER! INVALID SOLUTION!!!!!");
+					sleep(10000);
+				}
+				
+			}
+			resetMap();
+			counter += 1;
+			
+		}
+	}
+	
+	public static int[] getSituation(String solution, int move){				//Gets the inputs at the time that a particular move was performed, in the String solution.
 
 		int[] situation = new int[5];	//Order: [0] = up, [1] = down, [2] = left, [3] = right, [4] = lastOutput. 0 = open block, 1 = filled block.
 
@@ -234,9 +262,6 @@ public class DataAnalyzer {
 			situation[4] = Constants.DIR_UP;
 		}
 
-		//System.out.println("Solution: " +solution);
-		//System.out.println("Move: "+move+" "+solution.charAt(move)+" "+"	Up: "+situation[0]+"	Down: "+situation[1]+"	Left: "+situation[2]+"	Right: "+situation[3]+"	LastMove: "+situation[4]);
-		//System.out.println("pXpY("+pX+","+pY+")"+"	pXpY("+sX+","+sY+")");
 		return situation;
 	}
 	
@@ -260,7 +285,7 @@ public class DataAnalyzer {
 		}	
 	}
 	
-	private static void sleep(int time){			//stops the frame for 'time' miliseconds. 
+	private static void sleep(int time){										//stops the frame for 'time' miliseconds. 
 		
 		try {			//slows down the thread
 			Thread.sleep(time);
@@ -532,5 +557,12 @@ public class DataAnalyzer {
 		}
 		
 		System.out.printf("\n");
+	}
+
+	public static double round(double unrounded, int precision, int roundingMode)
+	{
+	    BigDecimal bd = new BigDecimal(unrounded);
+	    BigDecimal rounded = bd.setScale(precision, roundingMode);
+	    return rounded.doubleValue();
 	}
 }
