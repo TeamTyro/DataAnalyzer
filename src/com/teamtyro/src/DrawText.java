@@ -1,4 +1,4 @@
-package com.teamtyro.etc;
+package com.teamtyro.src;
 
 import org.lwjgl.opengl.GL11;
 
@@ -76,6 +76,49 @@ public class DrawText {
 					GL11.glVertex2d(x+0.0, y+0.5);
 					GL11.glVertex2d(x+0.0, y+1.0);
 					GL11.glVertex2d(x+0.5, y+1.0);
+				GL11.glEnd();
+				break;
+			case '6':
+				GL11.glBegin(GL11.GL_LINE_STRIP);
+					GL11.glVertex2d(x+0.5, y+1.0);
+					GL11.glVertex2d(x+0.0, y+1.0);
+					GL11.glVertex2d(x+0.0, y+0.5);
+					GL11.glVertex2d(x+0.0, y+0.0);
+					GL11.glVertex2d(x+0.5, y+0.0);
+					GL11.glVertex2d(x+0.5, y+0.5);
+					GL11.glVertex2d(x+0.0, y+0.5);
+				GL11.glEnd();
+				break;
+			case '7':
+				GL11.glBegin(GL11.GL_LINE_STRIP);
+					GL11.glVertex2d(x+0.25, y+0.0);
+					GL11.glVertex2d(x+0.25, y+0.5);
+					GL11.glVertex2d(x+0.5, y+1.0);
+					GL11.glVertex2d(x+0.0, y+1.0);
+				GL11.glEnd();
+				break;
+			case '8':
+				GL11.glBegin(GL11.GL_LINE_LOOP);
+					GL11.glVertex2d(x+0.0, y+0.0);
+					GL11.glVertex2d(x+0.5, y+0.0);
+					GL11.glVertex2d(x+0.5, y+0.5);
+					GL11.glVertex2d(x+0.0, y+0.5);
+				GL11.glEnd();
+				GL11.glBegin(GL11.GL_LINE_LOOP);
+					GL11.glVertex2d(x+0.0, y+0.5);
+					GL11.glVertex2d(x+0.5, y+0.5);
+					GL11.glVertex2d(x+0.5, y+1.0);
+					GL11.glVertex2d(x+0.0, y+1.0);
+				GL11.glEnd();
+				break;
+			case '9':
+				GL11.glBegin(GL11.GL_LINE_STRIP);
+					GL11.glVertex2d(x+0.5, y+0.0);
+					GL11.glVertex2d(x+0.5, y+0.5);
+					GL11.glVertex2d(x+0.5, y+1.0);
+					GL11.glVertex2d(x+0.0, y+1.0);
+					GL11.glVertex2d(x+0.0, y+0.5);
+					GL11.glVertex2d(x+0.5, y+0.5);
 				GL11.glEnd();
 				break;
 			}

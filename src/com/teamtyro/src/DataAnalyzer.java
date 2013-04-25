@@ -12,7 +12,6 @@ import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
 
 import com.teamtyro.etc.Constants;
-import com.teamtyro.etc.DrawText;
 import com.teamtyro.etc.MazeMap;
 
 public class DataAnalyzer {
