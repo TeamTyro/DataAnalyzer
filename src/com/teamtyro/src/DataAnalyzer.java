@@ -26,8 +26,6 @@ public class DataAnalyzer {
 	public static void main(String[] args) {
 		System.out.printf("DataAnalyzer V 0.0.1\n");
 		
-		dText = new DrawText("0123456789");
-		
 		subjects = new TestSubject [50];
 		parseTextyText("game_first_run.txt");
 		
@@ -121,12 +119,17 @@ public class DataAnalyzer {
 
 			// Rendering
 			render();
+			
 			checkKeys();
 
 			Display.update();
 		}
 
 		Display.destroy();
+	}
+	
+	private static int getPercent(int x, int y, int dir) {
+		return 12;
 	}
 	
 	private static void render() {
@@ -176,16 +179,33 @@ public class DataAnalyzer {
 						GL11.glVertex2f((1*bs)+(x*bs)+bs, (18*bs)-(y*bs)+bs);
 						GL11.glVertex2f((1*bs)+(x*bs)   , (18*bs)-(y*bs)+bs);
 					GL11.glEnd();
+					
+					GL11.glColor3f(1, 1, 1);
+					for(int i=0; i<4; i++) {
+						GL11.glPushMatrix();
+						switch(i) {
+						case 0:
+							GL11.glTranslated((1*bs)+(x*bs)+(bs-8)/2, (18*bs)-(y*bs)         , 0);
+							break;
+						case 1:
+							GL11.glTranslated((1*bs)+(x*bs)+(bs-8)/2, (18*bs)-(y*bs)+(bs-8)  , 0);
+							break;
+						case 2:
+							GL11.glTranslated((1*bs)+(x*bs)         , (18*bs)-(y*bs)+(bs-8)/2, 0);
+							break;
+						case 3:
+							GL11.glTranslated((1*bs)+(x*bs)+(bs-8)  , (18*bs)-(y*bs)+(bs-8)/2, 0);
+							break;
+						}
+						GL11.glScaled(6,6,0);
+						dText = new DrawText(Integer.toString(getPercent(0,0,i)));
+						dText.draw();
+						GL11.glPopMatrix();
+					}
 					break;
 				}
 			}
 		}
-		
-		GL11.glPushMatrix();
-		GL11.glTranslated(5, 5, 0);
-		GL11.glScaled(50,50,0);
-		dText.draw();
-		GL11.glPopMatrix();
 	}
 	
 	private static void checkKeys() {
