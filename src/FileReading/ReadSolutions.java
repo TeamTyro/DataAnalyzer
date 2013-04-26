@@ -8,11 +8,11 @@ import java.util.Random;
 
 public class ReadSolutions {
 
-	public static String[] solutions;		//Holds a string of each solution
-	public static String[] testSolutions;	//Holds a string of each solution that will be tested.
+	public static String[] humanSolutions;		//Holds a string of each solution
+	public static String[] geneticSolutions;	//Holds a string of each solution that will be tested.
+	public static String[] neuralSolutions;	//Holds a string of each solution that will be tested.
 	//public static String solutionsFile = "mapsolutions.txt";
 	//public static String testSolutionsFile = "testSolutions.txt";
-	public static int totalMoves;
 	public static int[][][][][][] tallyInputs = new int[2][2][2][2][4][4];			
 	
 	public static double outputs[][];
@@ -25,18 +25,19 @@ public class ReadSolutions {
 	public static int sY;				//The y start position of the player
 	public static Constants constant = new Constants();
 
-	public ReadSolutions(String mapx, String solutionsFile, String testSolutionsFile){
+	public ReadSolutions(String mapx, String humanSolutionsFile, String geneticSolutionsFile,String neuralSolutionsFile){
 		mapnumber = mapx;											//the name of the map file.
 		map = new int[Constants.MAP_WIDTH][Constants.MAP_HEIGHT];
 		getmapArray();
 		//System.out.println("////SOLUTION READER////");
-		solutions = readSolutions(solutionsFile);	//Sets the solutions array to all of the data in the text file. solutions[solution#] = String of solution
-		testSolutions = readSolutions(testSolutionsFile);
+		humanSolutions = readSolutions(humanSolutionsFile);	//Sets the solutions array to all of the data in the text file. solutions[solution#] = String of solution
+		geneticSolutions = readSolutions(geneticSolutionsFile);
+		neuralSolutions = readSolutions(neuralSolutionsFile);
 	}
 
 	public static String[] readSolutions(String file){
 		solutionsCount = 0;									//How many solutions there are.
-		totalMoves = 0;									//Total amount of moves from each solution added up.
+		int totalMoves = 0;									//Total amount of moves from each solution added up.
 
 		try {												//Gets the amount of solutions, so that I can make an array and record them all as a String.
 			BufferedReader in = new BufferedReader(new FileReader(file));
@@ -63,7 +64,7 @@ public class ReadSolutions {
 
 			in.close();
 		} catch(IOException ex) {
-			System.out.printf("ERROR: Couldn't load map\n");
+			System.out.printf("ERROR: Couldn't load maphhh\n");
 		}
 
 /*		for(int s = 0; s < solutions; s++){					//For testing, print out each solution in the solution array.
@@ -74,18 +75,18 @@ public class ReadSolutions {
 	}
 
 	
-	public static int[][][][][][] getRawInputArray(){
+	public static int[][][][][][] getRawInputArray(String[] solutionSet){
 		
 		
-		for(int s = 0; s < solutions.length; s++){
-			for(int l = 0; l < solutions[s].length(); l++){
+		for(int s = 0; s < solutionSet.length; s++){
+			for(int l = 0; l < solutionSet[s].length(); l++){
 				
-				int[] sol = getSituation(solutions[s],l);
+				int[] sol = getSituation(solutionSet[s],l);
 				int numericalOutput = 0;
-				if(solutions[s].charAt(l) == 'u'){ numericalOutput = 0;}
-				if(solutions[s].charAt(l) == 'd'){ numericalOutput = 1;}
-				if(solutions[s].charAt(l) == 'l'){ numericalOutput = 2;}
-				if(solutions[s].charAt(l) == 'r'){ numericalOutput = 3;}
+				if(solutionSet[s].charAt(l) == 'u'){ numericalOutput = 0;}
+				if(solutionSet[s].charAt(l) == 'd'){ numericalOutput = 1;}
+				if(solutionSet[s].charAt(l) == 'l'){ numericalOutput = 2;}
+				if(solutionSet[s].charAt(l) == 'r'){ numericalOutput = 3;}
 				tallyInputs[sol[0]][sol[1]][sol[2]][sol[3]][sol[4]][numericalOutput] += 1;		//Adds 1 to the tally for the given output of that person, for that given input set.
 			}
 		}

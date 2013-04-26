@@ -15,13 +15,17 @@ import FileReading.ReadSolutions;
 public class DataAnalyzer {
 	
 	//New Variables, specific for the data analyzing aspects of this program.//
-	public static int[][][][][][] tally = new int[2][2][2][2][4][4];		
-	public static double[][][][][][] percent = new double[2][2][2][2][4][4];	//Instead of holding the total people who turned x direction, it tells you what percent.		
+	public static int[][][][][][] tally = 		new int[2][2][2][2][4][4];		
+	public static double[][][][][][] percent = 	new double[2][2][2][2][4][4];	//Instead of holding the total people who turned x direction, it tells you what percent.		
+	public static int decimalsToDisplay = 		2;
 	private static ReadSolutions r;
 	
 	//Original COLORMAZEGAME variables//
 	private static int[][] 		map;										// Universal map array [x left = 0][y, top = 0] Returns a constant for what is
-	public static String 		mapFile = "map1.txt";		
+	public static String 		mapFile = 	"map1.txt";		
+	public static String		genetic = 	"geneticalgorithmsolutions.txt";
+	public static String		human = 	"humansolutions.txt";
+	public static String		neural = 	"neuralnetworksolutions.txt";
 	public static int frameSpeed = 0;										//How  many miliseconds to wait between frames.
 	public static int		 	pX;
 	public static int 			pY;
@@ -34,27 +38,40 @@ public class DataAnalyzer {
 	public static void main(String[] args) {
 		resetMap();
 		printMaze(map);
-		r = new ReadSolutions(mapFile, "mapsolutions.txt", "testsolutions.txt");
+		r = new ReadSolutions(mapFile, human, genetic, neural);
 		begin();
 	}
 	
 	public static void begin(){
 		//setUpScreen();
-		tally = r.getRawInputArray();
-		//getTally();
-		getPercent();
-		printGraphics();
 		
+		//getTally();
+		
+		printGraphics();
+		System.out.println("Genetic Algorithm solutions compared to Human Solutions:");
+		printPercents(r.humanSolutions, r.geneticSolutions);
+		
+		System.out.println("\nNeural Network solutions compared to Human Solutions:");
+		printPercents(r.humanSolutions, r.humanSolutions);
+		
+		//printPercents(genetic, neural);
+	}
+	
+	
+	
+	private static void printPercents(String[] firstSet, String[] secondSet){
+		tally = r.getRawInputArray(firstSet);
+		getPercent();
 		double allPercentTotals = 0;
 		double allHighestPossiblePercentTotals = 0;
-		for(int i = 0; i < r.testSolutions.length; i++){						//Goes through each solution in the txt
+		for(int i = 0; i < secondSet.length; i++){						//Goes through each solution in the txt
 			
-			String test = r.testSolutions[i];									//What string to test
-			System.out.println(r.testSolutions[i]);								//Prints the solution
+			String test = secondSet[i];									//What string to test
+			//System.out.println(secondSet[i]);								//Prints the solution
 			double percentTotal = 0;											//Will store the added percent of humanity for each solution, so that we can find the average later.
 			double highestPossiblePercentTotal = 0;								//Will store the added percent of humanity that each solution COULD POSSIBLY HAVE HAD so that I can find the average later.
 			
-			for(int j = 0; j < r.testSolutions[i].length(); j++){				//Goes through each character of the solution	
+			for(int j = 0; j < secondSet[i].length(); j++){				//Goes through each character of the solution	
 			
 				int[] sit = r.getSituation(test, j);
 				percentTotal += percent[sit[0]][sit[1]][sit[2]][sit[3]][sit[4]][getNumericalOutput(test.charAt(j))];					//Adds the percent of choice from that move to the total.
@@ -69,20 +86,16 @@ public class DataAnalyzer {
 			
 			}
 			
-			System.out.println("Percent for run: "+percentTotal/(test.length())+"     Possible percent for run: "+highestPossiblePercentTotal/(test.length()));						//Prints the percent of human'ness for that particular solutioon.
+			//System.out.println("Percent for run: "+percentTotal/(test.length())+"     Possible percent for run: "+highestPossiblePercentTotal/(test.length()));						//Prints the percent of human'ness for that particular solutioon.
 			allPercentTotals += (percentTotal/(test.length()));
 			allHighestPossiblePercentTotals += (highestPossiblePercentTotal/(test.length()));
 			
 		}
 		
-		double finalAveragePercent = allPercentTotals/r.testSolutions.length;
-		double finalAveragePossiblePercent = allHighestPossiblePercentTotals/r.testSolutions.length;
-		System.out.println("Final Average Percent: "+finalAveragePercent+"     Final Possible Average Percent: "+finalAveragePossiblePercent);
+		double finalAveragePercent = allPercentTotals/secondSet.length;
+		double finalAveragePossiblePercent = allHighestPossiblePercentTotals/secondSet.length;
+		System.out.println("Average: "+round(finalAveragePercent, decimalsToDisplay, BigDecimal.ROUND_HALF_UP)+"%     Average Possible: "+round(finalAveragePossiblePercent, decimalsToDisplay, BigDecimal.ROUND_HALF_UP)+"%     Average/Possible: "+round(finalAveragePercent/finalAveragePossiblePercent*100, decimalsToDisplay, BigDecimal.ROUND_HALF_UP)+"%");
 	}
-	
-	
-	
-
 	
 	private static void printGraphics(){										//Prints out all of the results from the data analysis.
 		int solutionCounter = 0;
@@ -184,7 +197,8 @@ public class DataAnalyzer {
 							}
 							if(total != 0){								//So that I don't divide by zero...
 								for(int in5 = 0; in5 <= 3; in5++){		//Goes through each out, and sets it as the percent of the total. Cool simple code, me gusta! p.s. I am so tired. It is finals week, and I should not be coding. Well. Toodleoo! To the next line I go...
-									percent[in0][in1][in2][in3][in4][in5] = round((double) tally[in0][in1][in2][in3][in4][in5]/total*100,2,BigDecimal.ROUND_HALF_UP);
+									//percent[in0][in1][in2][in3][in4][in5] = round((double) tally[in0][in1][in2][in3][in4][in5]/total*100,2,BigDecimal.ROUND_HALF_UP);
+									percent[in0][in1][in2][in3][in4][in5] = (tally[in0][in1][in2][in3][in4][in5]/total)*100;
 								}
 							}
 							
