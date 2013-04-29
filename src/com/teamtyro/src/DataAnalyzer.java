@@ -15,9 +15,9 @@ import FileReading.ReadSolutions;
 public class DataAnalyzer {
 	
 	//New Variables, specific for the data analyzing aspects of this program.//
-	public static int[][][][][][] tally = 		new int[2][2][2][2][4][4];		
-	public static double[][][][][][] percent = 	new double[2][2][2][2][4][4];	//Instead of holding the total people who turned x direction, it tells you what percent.		
-	public static int decimalsToDisplay = 		2;
+	//public static int[][][][][][] tally = 		new int[2][2][2][2][4][4];		
+	//public static double[][][][][][] percent = 	new double[2][2][2][2][4][4];	//Instead of holding the total people who turned x direction, it tells you what percent.		
+	public static int decimalsToDisplay = 		10;
 	private static ReadSolutions r;
 	
 	//Original COLORMAZEGAME variables//
@@ -47,7 +47,7 @@ public class DataAnalyzer {
 		
 		//getTally();
 		
-		printGraphics();
+		//printGraphics();
 		System.out.println("Genetic Algorithm solutions compared to Human Solutions:");
 		printPercents(r.humanSolutions, r.geneticSolutions);
 		
@@ -60,9 +60,48 @@ public class DataAnalyzer {
 	
 	
 	private static void printPercents(String[] firstSet, String[] secondSet){
-		tally = r.getRawInputArray(firstSet);
-		getPercent();
-		double allPercentTotals = 0;
+		//tally = r.getRawInputArray(firstSet);
+		int[][][][][][] tallyOne = r.getRawInputArray(firstSet); 
+		int[][][][][][] tallyTwo = r.getRawInputArray(secondSet);
+		double[][][][][][] percentOne = getPercent(tallyOne);
+		double[][][][][][] percentTwo = getPercent(tallyTwo);			//[2][2][2][2][4][4] [up][down[left][right][lastOutput][move]
+		double totalPercent = 0;										//Gets each averaged percent of the database, then averages by how many databases there even are.
+		double databasesUsed = 0;											//How many databases got used. (In case you are testing a single solution, which wont have a percent for every single database. In a large database, this should be equal to around 35.
+		
+		for(int in0 = 0; in0 <= 1; in0++){								//in0	block above
+			for(int in1 = 0; in1 <= 1; in1++){							//in1	block below
+				for(int in2 = 0; in2 <=1; in2++){						//in2	block left
+					for(int in3 = 0; in3 <=1; in3++){					//in3	block right
+						for(int in4 = 0; in4 <= 3; in4++){				//in4	last move (up,down,left, or right)
+							double whatToDivideBy = 0;					//Is only a double to avoid issues when dividing another double by an int. Just makin sure stuff works:)
+							double totalPercentTemporary = 0;
+							
+							for(int in5 = 0; in5 <= 3; in5++){
+								
+								if(percentOne[in0][in1][in2][in3][in4][in5] != 0 || percentTwo[in0][in1][in2][in3][in4][in5] != 0){	
+									whatToDivideBy += 1;
+									//System.out.println(whatToDivideBy);
+									double total = percentOne[in0][in1][in2][in3][in4][in5]+percentTwo[in0][in1][in2][in3][in4][in5];	//Gets total
+									System.out.println(percentOne[in0][in1][in2][in3][in4][in5]+" "+percentTwo[in0][in1][in2][in3][in4][in5]);
+									System.out.println(tallyOne[in0][in1][in2][in3][in4][in5]+" "+tallyTwo[in0][in1][in2][in3][in4][in5]+"\n");
+									totalPercentTemporary += percentTwo[in0][in1][in2][in3][in4][in5]/total;
+								}
+
+							}
+							if(whatToDivideBy != 0){ 
+								databasesUsed += 1;
+								totalPercent += totalPercentTemporary/whatToDivideBy;
+							}
+							
+							
+						}
+					}
+				}
+			}
+		}
+		System.out.println(totalPercent+" "+databasesUsed);
+		System.out.println("Average: "+round(totalPercent/databasesUsed, decimalsToDisplay, BigDecimal.ROUND_HALF_UP));
+/*		double allPercentTotals = 0;
 		double allHighestPossiblePercentTotals = 0;
 		for(int i = 0; i < secondSet.length; i++){						//Goes through each solution in the txt
 			
@@ -94,7 +133,7 @@ public class DataAnalyzer {
 		
 		double finalAveragePercent = allPercentTotals/secondSet.length;
 		double finalAveragePossiblePercent = allHighestPossiblePercentTotals/secondSet.length;
-		System.out.println("Average: "+round(finalAveragePercent, decimalsToDisplay, BigDecimal.ROUND_HALF_UP)+"%     Average Possible: "+round(finalAveragePossiblePercent, decimalsToDisplay, BigDecimal.ROUND_HALF_UP)+"%     Average/Possible: "+round(finalAveragePercent/finalAveragePossiblePercent*100, decimalsToDisplay, BigDecimal.ROUND_HALF_UP)+"%");
+		System.out.println("Average: "+round(finalAveragePercent, decimalsToDisplay, BigDecimal.ROUND_HALF_UP)+"%     Average Possible: "+round(finalAveragePossiblePercent, decimalsToDisplay, BigDecimal.ROUND_HALF_UP)+"%     Average/Possible: "+round(finalAveragePercent/finalAveragePossiblePercent*100, decimalsToDisplay, BigDecimal.ROUND_HALF_UP)+"%");*/
 	}
 	
 	private static void printGraphics(){										//Prints out all of the results from the data analysis.
@@ -183,7 +222,8 @@ public class DataAnalyzer {
 		
 	}
 	
-	public static void getPercent(){											//Fills up the percent array with processed data from the tally array.
+	public static double[][][][][][] getPercent(int[][][][][][] tally){											//Fills up the percent array with processed data from the tally array.
+		double[][][][][][] percent = new double[2][2][2][2][4][4];
 		
 		for(int in0 = 0; in0 <= 1; in0++){								//in0	block above
 			for(int in1 = 0; in1 <= 1; in1++){							//in1	block below
@@ -193,6 +233,7 @@ public class DataAnalyzer {
 							
 							double total = 0;
 							for(int in5 = 0; in5 <= 3; in5++){			//Finds the total tallies, in order to divide each possible solution's tally by total tallys.
+								percent[in0][in1][in2][in3][in4][in5] = 0;
 								total += tally[in0][in1][in2][in3][in4][in5];
 							}
 							if(total != 0){								//So that I don't divide by zero...
@@ -208,6 +249,7 @@ public class DataAnalyzer {
 				}
 			}
 		}
+		return percent;
 	}
 	
 /*	public static void getTally(){												//Fills up the tally array with the correct amount of tallys for each situation.
