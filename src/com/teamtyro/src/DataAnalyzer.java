@@ -17,7 +17,7 @@ public class DataAnalyzer {
 	//New Variables, specific for the data analyzing aspects of this program.//
 	//public static int[][][][][][] tally = 		new int[2][2][2][2][4][4];		
 	//public static double[][][][][][] percent = 	new double[2][2][2][2][4][4];	//Instead of holding the total people who turned x direction, it tells you what percent.		
-	public static int decimalsToDisplay = 		10;
+	public static int decimalsToDisplay = 		2;
 	private static ReadSolutions r;
 	
 	//Original COLORMAZEGAME variables//
@@ -48,31 +48,53 @@ public class DataAnalyzer {
 		//getTally();
 		
 		//printGraphics();
+		
 		System.out.println("Genetic Algorithm solutions compared to Human Solutions:");
 		printPercents(r.humanSolutions, r.geneticSolutions);
 		
-		System.out.println("\nNeural Network solutions compared to Human Solutions:");
-		printPercents(r.humanSolutions, r.humanSolutions);
 		
+		System.out.println("\nNeural Network solutions compared to Human Solutions:");
+		printPercents(r.humanSolutions, r.neuralSolutions);
+		
+		System.out.println("\nNeural Network solutions compared to Genetic Algorithm solutions:");
+			printPercents(r.geneticSolutions, r.neuralSolutions);
 		//printPercents(genetic, neural);
 	}
 	
 	
 	
 	private static void printPercents(String[] firstSet, String[] secondSet){
-		//tally = r.getRawInputArray(firstSet);
+		
 		int[][][][][][] tallyOne = r.getRawInputArray(firstSet); 
 		int[][][][][][] tallyTwo = r.getRawInputArray(secondSet);
+		
 		double[][][][][][] percentOne = getPercent(tallyOne);
 		double[][][][][][] percentTwo = getPercent(tallyTwo);			//[2][2][2][2][4][4] [up][down[left][right][lastOutput][move]
+		
 		double totalPercent = 0;										//Gets each averaged percent of the database, then averages by how many databases there even are.
 		double databasesUsed = 0;											//How many databases got used. (In case you are testing a single solution, which wont have a percent for every single database. In a large database, this should be equal to around 35.
+		
+		double totalDifference = 0;
 		
 		for(int in0 = 0; in0 <= 1; in0++){								//in0	block above
 			for(int in1 = 0; in1 <= 1; in1++){							//in1	block below
 				for(int in2 = 0; in2 <=1; in2++){						//in2	block left
 					for(int in3 = 0; in3 <=1; in3++){					//in3	block right
 						for(int in4 = 0; in4 <= 3; in4++){				//in4	last move (up,down,left, or right)
+							//System.out.println();
+							double totalDifferencePlaceholder = 0;
+							for(int in5 = 0; in5 <= 3; in5++){
+								double difference = percentOne[in0][in1][in2][in3][in4][in5]-percentTwo[in0][in1][in2][in3][in4][in5];	//Finds the difference
+								if(difference < 0){ difference = difference*(-1);}																//Converts difference to a positive number
+								//System.out.println("%1: "+percentOne[in0][in1][in2][in3][in4][in5]+" %2: "+percentTwo[in0][in1][in2][in3][in4][in5]+"Difference: "+difference);
+								totalDifferencePlaceholder += difference;
+							}
+							//System.out.println("TotalDifference: "+totalDifferencePlaceholder);
+							
+							
+							
+							
+							////////////////////////////////////
 							double whatToDivideBy = 0;					//Is only a double to avoid issues when dividing another double by an int. Just makin sure stuff works:)
 							double totalPercentTemporary = 0;
 							
@@ -82,8 +104,6 @@ public class DataAnalyzer {
 									whatToDivideBy += 1;
 									//System.out.println(whatToDivideBy);
 									double total = percentOne[in0][in1][in2][in3][in4][in5]+percentTwo[in0][in1][in2][in3][in4][in5];	//Gets total
-									System.out.println(percentOne[in0][in1][in2][in3][in4][in5]+" "+percentTwo[in0][in1][in2][in3][in4][in5]);
-									System.out.println(tallyOne[in0][in1][in2][in3][in4][in5]+" "+tallyTwo[in0][in1][in2][in3][in4][in5]+"\n");
 									totalPercentTemporary += percentTwo[in0][in1][in2][in3][in4][in5]/total;
 								}
 
@@ -91,49 +111,19 @@ public class DataAnalyzer {
 							if(whatToDivideBy != 0){ 
 								databasesUsed += 1;
 								totalPercent += totalPercentTemporary/whatToDivideBy;
+								totalDifference += totalDifferencePlaceholder;
 							}
-							
+							//////////////////////////////////
+							//System.out.println("Total: "+totalDifference+"TotalDatabases: "+databasesUsed);
 							
 						}
 					}
 				}
 			}
 		}
-		System.out.println(totalPercent+" "+databasesUsed);
-		System.out.println("Average: "+round(totalPercent/databasesUsed, decimalsToDisplay, BigDecimal.ROUND_HALF_UP));
-/*		double allPercentTotals = 0;
-		double allHighestPossiblePercentTotals = 0;
-		for(int i = 0; i < secondSet.length; i++){						//Goes through each solution in the txt
-			
-			String test = secondSet[i];									//What string to test
-			//System.out.println(secondSet[i]);								//Prints the solution
-			double percentTotal = 0;											//Will store the added percent of humanity for each solution, so that we can find the average later.
-			double highestPossiblePercentTotal = 0;								//Will store the added percent of humanity that each solution COULD POSSIBLY HAVE HAD so that I can find the average later.
-			
-			for(int j = 0; j < secondSet[i].length(); j++){				//Goes through each character of the solution	
-			
-				int[] sit = r.getSituation(test, j);
-				percentTotal += percent[sit[0]][sit[1]][sit[2]][sit[3]][sit[4]][getNumericalOutput(test.charAt(j))];					//Adds the percent of choice from that move to the total.
-				
-				double highestPercent = -1;
-				for(int k = 0; k <= 3; k++){									//Goes through each move for that situation, and gets the highest percent.
-					if(percent[sit[0]][sit[1]][sit[2]][sit[3]][sit[4]][k] > highestPercent){	highestPercent = percent[sit[0]][sit[1]][sit[2]][sit[3]][sit[4]][k];} 
-				}
-				
-				highestPossiblePercentTotal += highestPercent;
-				//System.out.println(percent[sit[0]][sit[1]][sit[2]][sit[3]][sit[4]][getNumericalOutput(test.charAt(j))]+ " "+percentTotal);
-			
-			}
-			
-			//System.out.println("Percent for run: "+percentTotal/(test.length())+"     Possible percent for run: "+highestPossiblePercentTotal/(test.length()));						//Prints the percent of human'ness for that particular solutioon.
-			allPercentTotals += (percentTotal/(test.length()));
-			allHighestPossiblePercentTotals += (highestPossiblePercentTotal/(test.length()));
-			
-		}
-		
-		double finalAveragePercent = allPercentTotals/secondSet.length;
-		double finalAveragePossiblePercent = allHighestPossiblePercentTotals/secondSet.length;
-		System.out.println("Average: "+round(finalAveragePercent, decimalsToDisplay, BigDecimal.ROUND_HALF_UP)+"%     Average Possible: "+round(finalAveragePossiblePercent, decimalsToDisplay, BigDecimal.ROUND_HALF_UP)+"%     Average/Possible: "+round(finalAveragePercent/finalAveragePossiblePercent*100, decimalsToDisplay, BigDecimal.ROUND_HALF_UP)+"%");*/
+		System.out.println("Databases1: "+ databasesUsed);
+		System.out.println("	TotalPercentChange: "+round(totalDifference, decimalsToDisplay, BigDecimal.ROUND_HALF_UP)+"	Percent Change Average: "+round((totalDifference/databasesUsed)/2, decimalsToDisplay, BigDecimal.ROUND_HALF_UP));
+		//System.out.println("	Average: "+round(totalPercent/databasesUsed, decimalsToDisplay, BigDecimal.ROUND_HALF_UP));
 	}
 	
 	private static void printGraphics(){										//Prints out all of the results from the data analysis.

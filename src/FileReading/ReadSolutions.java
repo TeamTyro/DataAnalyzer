@@ -8,15 +8,13 @@ import java.util.Random;
 
 public class ReadSolutions {
 
-	public static String[] humanSolutions;		//Holds a string of each solution
-	public static String[] geneticSolutions;	//Holds a string of each solution that will be tested.
-	public static String[] neuralSolutions;	//Holds a string of each solution that will be tested.
+	public String[] humanSolutions;		//Holds a string of each solution
+	public String[] geneticSolutions;	//Holds a string of each solution that will be tested.
+	public String[] neuralSolutions;	//Holds a string of each solution that will be tested.
 	//public static String solutionsFile = "mapsolutions.txt";
 	//public static String testSolutionsFile = "testSolutions.txt";
-	public static int[][][][][][] tallyInputs = new int[2][2][2][2][4][4];			
 	
 	public static double outputs[][];
-	public static int solutionsCount;
 	public static MazeMap m = new MazeMap();
 	public static int[][] map;
 	public Random r = new Random();//3
@@ -36,7 +34,7 @@ public class ReadSolutions {
 	}
 
 	public static String[] readSolutions(String file){
-		solutionsCount = 0;									//How many solutions there are.
+		int solutionsCount = 0;									//How many solutions there are.
 		int totalMoves = 0;									//Total amount of moves from each solution added up.
 
 		try {												//Gets the amount of solutions, so that I can make an array and record them all as a String.
@@ -75,9 +73,8 @@ public class ReadSolutions {
 	}
 
 	
-	public static int[][][][][][] getRawInputArray(String[] solutionSet){
-		
-		
+	public int[][][][][][] getRawInputArray(String[] solutionSet){
+		int[][][][][][] tallyInputs = new int[2][2][2][2][4][4];			
 		for(int s = 0; s < solutionSet.length; s++){
 			for(int l = 0; l < solutionSet[s].length(); l++){
 				
@@ -90,6 +87,7 @@ public class ReadSolutions {
 				tallyInputs[sol[0]][sol[1]][sol[2]][sol[3]][sol[4]][numericalOutput] += 1;		//Adds 1 to the tally for the given output of that person, for that given input set.
 			}
 		}
+		
 		return tallyInputs;
 	}
 	
