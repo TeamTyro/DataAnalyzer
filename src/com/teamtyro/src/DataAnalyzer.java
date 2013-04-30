@@ -121,7 +121,6 @@ public class DataAnalyzer {
 				}
 			}
 		}
-		System.out.println("Databases1: "+ databasesUsed);
 		System.out.println("	TotalPercentChange: "+round(totalDifference, decimalsToDisplay, BigDecimal.ROUND_HALF_UP)+"	Percent Change Average: "+round((totalDifference/databasesUsed)/2, decimalsToDisplay, BigDecimal.ROUND_HALF_UP));
 		//System.out.println("	Average: "+round(totalPercent/databasesUsed, decimalsToDisplay, BigDecimal.ROUND_HALF_UP));
 	}
