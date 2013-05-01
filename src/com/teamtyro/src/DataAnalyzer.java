@@ -25,6 +25,7 @@ public class DataAnalyzer {
 	private static DrawText dText;
 	
 	private static boolean [] keyPressed;
+	private static boolean numbers;
 	
 	public static void main(String[] args) {
 		System.out.printf("DataAnalyzer V 0.0.1\n");
@@ -49,10 +50,11 @@ public class DataAnalyzer {
 			}
 		}
 		
-		keyPressed = new boolean [5];
-		for(int i=0; i<5; i++) {
+		keyPressed = new boolean [256];
+		for(int i=0; i<256; i++) {
 			keyPressed[i] = false;
 		}
+		numbers = true;
 		
 		printMaze(map);
 		
@@ -138,7 +140,7 @@ public class DataAnalyzer {
 	}
 	
 	private static int getPercent(int x, int y, int dir) {
-		return 69;
+		return 57;
 	}
 	
 	private static void drawRect(double x, double y, double w, double h) {
@@ -171,6 +173,10 @@ public class DataAnalyzer {
 				case Constants.MAP_SPACE:
 					GL11.glColor3f(0, 0, (float)maze.getDensity(x,y)/(float)maxDensity);
 					drawRect(x*bs, y*bs, bs, bs);
+					
+					if(!numbers) {
+						break;
+					}
 					
 					double txtSize = bs/5;
 					double txtW = (1+0.4)*txtSize;
@@ -216,6 +222,13 @@ public class DataAnalyzer {
 			if(maxDensity < maze.getMaxDensity()) {
 				maxDensity++;
 			}
+		}
+		
+		if(Keyboard.isKeyDown(Keyboard.KEY_N) && !keyPressed[10]) {
+			numbers = !numbers;
+			keyPressed[10] = true;
+		} else if(!Keyboard.isKeyDown(Keyboard.KEY_N)) {
+			keyPressed[10] = false;
 		}
 		
 		if(Keyboard.isKeyDown(Keyboard.KEY_LEFT) && !keyPressed[Constants.DIR_LEFT]) {
