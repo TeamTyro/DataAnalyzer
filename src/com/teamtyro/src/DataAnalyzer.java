@@ -124,7 +124,7 @@ public class DataAnalyzer {
 		while(!Display.isCloseRequested()) {
 			// Clears screen and depth buffer
 			GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
-
+			GL11.glLoadIdentity();
 			GL11.glTranslated(camX, camY, 0);
 			// Rendering
 			render();
