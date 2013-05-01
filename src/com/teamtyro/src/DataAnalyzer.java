@@ -20,8 +20,11 @@ public class DataAnalyzer {
 	private static MazeMap maze;
 	
 	private static int maxDensity;
+	private static int camX, camY;
 	
 	private static DrawText dText;
+	
+	private static boolean [] keyPressed;
 	
 	public static void main(String[] args) {
 		System.out.printf("DataAnalyzer V 0.0.1\n");
@@ -44,6 +47,11 @@ public class DataAnalyzer {
 			for(int y=0; y<Constants.MAP_HEIGHT; y++) {
 				map[x][y] = maze.getSpace(x,y);
 			}
+		}
+		
+		keyPressed = new boolean [5];
+		for(int i=0; i<5; i++) {
+			keyPressed[i] = false;
 		}
 		
 		printMaze(map);
@@ -117,6 +125,7 @@ public class DataAnalyzer {
 			// Clears screen and depth buffer
 			GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 
+			GL11.glTranslated(camX, camY, 0);
 			// Rendering
 			render();
 			
@@ -129,7 +138,7 @@ public class DataAnalyzer {
 	}
 	
 	private static int getPercent(int x, int y, int dir) {
-		return 12;
+		return 69;
 	}
 	
 	private static void drawRect(double x, double y, double w, double h) {
@@ -142,7 +151,7 @@ public class DataAnalyzer {
 	}
 	
 	private static void render() {
-		float bs = 32;
+		float bs = Constants.BLOCK_SIZE;
 		
 		for(int y=0; y<Constants.MAP_HEIGHT; y++) {
 			for(int x=0; x<Constants.MAP_WIDTH; x++) {
@@ -163,24 +172,31 @@ public class DataAnalyzer {
 					GL11.glColor3f(0, 0, (float)maze.getDensity(x,y)/(float)maxDensity);
 					drawRect(x*bs, y*bs, bs, bs);
 					
+					double txtSize = bs/5;
+					double txtW = (1+0.4)*txtSize;
+					double txtH = txtSize;
 					GL11.glColor3f(1, 1, 1);
 					for(int i=0; i<4; i++) {
+						if(getPercent(0,0,i) == 0) {
+							break;
+						}
+						
 						GL11.glPushMatrix();
 						switch(i) {
 						case 0:
-							GL11.glTranslated((x*bs)+(bs-8)/2, (y*bs)         , 0);
+							GL11.glTranslated((x*bs)+(bs-txtW)/2, (y*bs)         , 0);
 							break;
 						case 1:
-							GL11.glTranslated((x*bs)+(bs-8)/2, (y*bs)+(bs-8)  , 0);
+							GL11.glTranslated((x*bs)+(bs-txtW)/2, (y*bs)+(bs-txtH)  , 0);
 							break;
 						case 2:
-							GL11.glTranslated((x*bs)         , (y*bs)+(bs-8)/2, 0);
+							GL11.glTranslated((x*bs)         , (y*bs)+(bs-txtH)/2, 0);
 							break;
 						case 3:
-							GL11.glTranslated((x*bs)+(bs-8)  , (y*bs)+(bs-8)/2, 0);
+							GL11.glTranslated((x*bs)+(bs-txtW)  , (y*bs)+(bs-txtH)/2, 0);
 							break;
 						}
-						GL11.glScaled(6,6,0);
+						GL11.glScaled(txtSize-1, txtSize-1, 0);
 						dText = new DrawText(Integer.toString(getPercent(0,0,i)));
 						dText.draw();
 						GL11.glPopMatrix();
@@ -200,6 +216,32 @@ public class DataAnalyzer {
 			if(maxDensity < maze.getMaxDensity()) {
 				maxDensity++;
 			}
+		}
+		
+		if(Keyboard.isKeyDown(Keyboard.KEY_LEFT) && !keyPressed[Constants.DIR_LEFT]) {
+			camX+=Constants.BLOCK_SIZE;
+			keyPressed[Constants.DIR_LEFT] = true;
+		} else if(!Keyboard.isKeyDown(Keyboard.KEY_LEFT)) {
+			keyPressed[Constants.DIR_LEFT] = false;
+		}
+		if(Keyboard.isKeyDown(Keyboard.KEY_RIGHT) && !keyPressed[Constants.DIR_RIGHT]) {
+			camX-=Constants.BLOCK_SIZE;
+			keyPressed[Constants.DIR_RIGHT] = true;
+		} else if(!Keyboard.isKeyDown(Keyboard.KEY_RIGHT)) {
+			keyPressed[Constants.DIR_RIGHT] = false;
+		}
+		
+		if(Keyboard.isKeyDown(Keyboard.KEY_UP) && !keyPressed[Constants.DIR_UP]) {
+			camY-=Constants.BLOCK_SIZE;
+			keyPressed[Constants.DIR_UP] = true;
+		} else if(!Keyboard.isKeyDown(Keyboard.KEY_UP)) {
+			keyPressed[Constants.DIR_UP] = false;
+		}
+		if(Keyboard.isKeyDown(Keyboard.KEY_DOWN) && !keyPressed[Constants.DIR_DOWN]) {
+			camY+=Constants.BLOCK_SIZE;
+			keyPressed[Constants.DIR_DOWN] = true;
+		} else if(!Keyboard.isKeyDown(Keyboard.KEY_DOWN)) {
+			keyPressed[Constants.DIR_DOWN] = false;
 		}
 	}
 	
