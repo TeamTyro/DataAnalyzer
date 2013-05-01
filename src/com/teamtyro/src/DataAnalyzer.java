@@ -93,7 +93,7 @@ public class DataAnalyzer {
 	}
 	
 	private static void begin() {
-		int size = 640;
+		int size = Constants.MAP_WIDTH*32;
 		try {
 			Display.setDisplayMode(new DisplayMode(size,size));
 			Display.create();
@@ -132,69 +132,52 @@ public class DataAnalyzer {
 		return 12;
 	}
 	
+	private static void drawRect(double x, double y, double w, double h) {
+		GL11.glBegin(GL11.GL_QUADS);
+			GL11.glVertex2d(x  ,y  );
+			GL11.glVertex2d(x+w,y  );
+			GL11.glVertex2d(x+w,y+h);
+			GL11.glVertex2d(x  ,y+h);
+		GL11.glEnd();
+	}
+	
 	private static void render() {
 		float bs = 32;
-		GL11.glBegin(GL11.GL_LINE_LOOP);
-			GL11.glVertex2f( 1*bs, 3*bs-1);
-			GL11.glVertex2f(17*bs, 3*bs-1);
-			GL11.glVertex2f(17*bs,19*bs+0);
-			GL11.glVertex2f( 1*bs,19*bs+0);
-		GL11.glEnd();
 		
 		for(int y=0; y<Constants.MAP_HEIGHT; y++) {
 			for(int x=0; x<Constants.MAP_WIDTH; x++) {
 				switch(map[x][y]) {
 				case Constants.MAP_BLOCK:
 					GL11.glColor3f(1, 0, 0);
-					GL11.glBegin(GL11.GL_QUADS);
-						GL11.glVertex2f((1*bs)+(x*bs)   , (18*bs)-(y*bs)   );
-						GL11.glVertex2f((1*bs)+(x*bs)+bs, (18*bs)-(y*bs)   );
-						GL11.glVertex2f((1*bs)+(x*bs)+bs, (18*bs)-(y*bs)+bs);
-						GL11.glVertex2f((1*bs)+(x*bs)   , (18*bs)-(y*bs)+bs);
-					GL11.glEnd();
+					drawRect(x*bs, y*bs, bs, bs);
 					break;
 				case Constants.MAP_START:
 					GL11.glColor3f(1, 1, 0);
-					GL11.glBegin(GL11.GL_QUADS);
-						GL11.glVertex2f((1*bs)+(x*bs)   , (18*bs)-(y*bs)   );
-						GL11.glVertex2f((1*bs)+(x*bs)+bs, (18*bs)-(y*bs)   );
-						GL11.glVertex2f((1*bs)+(x*bs)+bs, (18*bs)-(y*bs)+bs);
-						GL11.glVertex2f((1*bs)+(x*bs)   , (18*bs)-(y*bs)+bs);
-					GL11.glEnd();
+					drawRect(x*bs, y*bs, bs, bs);
 					break;
 				case Constants.MAP_WIN:
 					GL11.glColor3f(0, 1, 0);
-					GL11.glBegin(GL11.GL_QUADS);
-						GL11.glVertex2f((1*bs)+(x*bs)   , (18*bs)-(y*bs)   );
-						GL11.glVertex2f((1*bs)+(x*bs)+bs, (18*bs)-(y*bs)   );
-						GL11.glVertex2f((1*bs)+(x*bs)+bs, (18*bs)-(y*bs)+bs);
-						GL11.glVertex2f((1*bs)+(x*bs)   , (18*bs)-(y*bs)+bs);
-					GL11.glEnd();
+					drawRect(x*bs, y*bs, bs, bs);
 					break;
 				case Constants.MAP_SPACE:
 					GL11.glColor3f(0, 0, (float)maze.getDensity(x,y)/(float)maxDensity);
-					GL11.glBegin(GL11.GL_QUADS);
-						GL11.glVertex2f((1*bs)+(x*bs)   , (18*bs)-(y*bs)   );
-						GL11.glVertex2f((1*bs)+(x*bs)+bs, (18*bs)-(y*bs)   );
-						GL11.glVertex2f((1*bs)+(x*bs)+bs, (18*bs)-(y*bs)+bs);
-						GL11.glVertex2f((1*bs)+(x*bs)   , (18*bs)-(y*bs)+bs);
-					GL11.glEnd();
+					drawRect(x*bs, y*bs, bs, bs);
 					
 					GL11.glColor3f(1, 1, 1);
 					for(int i=0; i<4; i++) {
 						GL11.glPushMatrix();
 						switch(i) {
 						case 0:
-							GL11.glTranslated((1*bs)+(x*bs)+(bs-8)/2, (18*bs)-(y*bs)         , 0);
+							GL11.glTranslated((x*bs)+(bs-8)/2, (y*bs)         , 0);
 							break;
 						case 1:
-							GL11.glTranslated((1*bs)+(x*bs)+(bs-8)/2, (18*bs)-(y*bs)+(bs-8)  , 0);
+							GL11.glTranslated((x*bs)+(bs-8)/2, (y*bs)+(bs-8)  , 0);
 							break;
 						case 2:
-							GL11.glTranslated((1*bs)+(x*bs)         , (18*bs)-(y*bs)+(bs-8)/2, 0);
+							GL11.glTranslated((x*bs)         , (y*bs)+(bs-8)/2, 0);
 							break;
 						case 3:
-							GL11.glTranslated((1*bs)+(x*bs)+(bs-8)  , (18*bs)-(y*bs)+(bs-8)/2, 0);
+							GL11.glTranslated((x*bs)+(bs-8)  , (y*bs)+(bs-8)/2, 0);
 							break;
 						}
 						GL11.glScaled(6,6,0);
