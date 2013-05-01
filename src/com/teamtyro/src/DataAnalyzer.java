@@ -113,7 +113,7 @@ public class DataAnalyzer {
 		// Init OpenGL
 		GL11.glMatrixMode(GL11.GL_PROJECTION);
 		GL11.glLoadIdentity();
-		GL11.glOrtho(0, (float)size, 0, (float)size, 1, -1);
+		GL11.glOrtho(-1, (float)size-1, 0, (float)size, 1, -1);
 		GL11.glMatrixMode(GL11.GL_MODELVIEW);
 		
 		maxDensity = maze.getMaxDensity();
