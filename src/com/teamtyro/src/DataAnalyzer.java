@@ -1,5 +1,8 @@
 package com.teamtyro.src;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.util.Random;
 
@@ -19,7 +22,7 @@ public class DataAnalyzer {
 	//public static double[][][][][][] percent = 	new double[2][2][2][2][4][4];	//Instead of holding the total people who turned x direction, it tells you what percent.		
 	public static int decimalsToDisplay = 		2;
 	private static ReadSolutions r;
-	
+	private static boolean includeLastMove= true;
 	//Original COLORMAZEGAME variables//
 	private static int[][] 		map;										// Universal map array [x left = 0][y, top = 0] Returns a constant for what is
 	public static String 		mapFile = 	"map1.txt";		
@@ -44,33 +47,58 @@ public class DataAnalyzer {
 	
 	public static void begin(){
 		//setUpScreen();
-		
-		//getTally();
-		
-		//printGraphics();
+
 		
 		System.out.println("Genetic Algorithm solutions compared to Human Solutions:");
-		printPercents(r.humanSolutions, r.geneticSolutions);
+			printPercents(r.humanSolutions, r.geneticSolutions);
 		
 		
 		System.out.println("\nNeural Network solutions compared to Human Solutions:");
-		printPercents(r.humanSolutions, r.neuralSolutions);
+			printPercents(r.humanSolutions, r.neuralSolutions);
 		
 		System.out.println("\nNeural Network solutions compared to Genetic Algorithm solutions:");
 			printPercents(r.geneticSolutions, r.neuralSolutions);
-		//printPercents(genetic, neural);
+		
+		while(true){
+			int x= 	readInfo("X: ");
+			int y=	readInfo("Y: ");
+			printMaze(map);
+			System.out.println("up:	"+r.getMapPercent(r.humanSolutions)[x][y][0]);
+			System.out.println("down:	"+r.getMapPercent(r.humanSolutions)[x][y][1]);
+			System.out.println("left:	"+r.getMapPercent(r.humanSolutions)[x][y][2]);
+			System.out.println("right:	"+r.getMapPercent(r.humanSolutions)[x][y][3]);
+		}
 	}
 	
 	
+	private static int readInfo(String prompt){		//Tool for reading lines from console
+
+		//System.out.printf(prompt + "\n");//prompt
+		System.out.printf(prompt);//prompt
+
+		//read information from console
+		try{
+		    BufferedReader bufferRead = new BufferedReader(new InputStreamReader(System.in));
+		    String s = bufferRead.readLine();
+
+		    int x = Integer.parseInt(s);
+		    return x;
+		}
+		catch(IOException e)
+		{
+			e.printStackTrace();
+		}
+		return -10000;
+	}
 	
 	private static void printPercents(String[] firstSet, String[] secondSet){
 		
-		int[][][][][][] tallyOne = r.getRawInputArray(firstSet); 
-		int[][][][][][] tallyTwo = r.getRawInputArray(secondSet);
+		int[][][][][][] tallyOne = r.getRawInputArray(firstSet, includeLastMove); 
+		int[][][][][][] tallyTwo = r.getRawInputArray(secondSet, includeLastMove);
 		
-		double[][][][][][] percentOne = getPercent(tallyOne);
-		double[][][][][][] percentTwo = getPercent(tallyTwo);			//[2][2][2][2][4][4] [up][down[left][right][lastOutput][move]
-		
+		double[][][][][][] percentOne = r.getPercent(tallyOne);
+		double[][][][][][] percentTwo = r.getPercent(tallyTwo);			//[2][2][2][2][4][4] [up][down[left][right][lastOutput][move]
+		//printGraphics(percentOne, tallyOne);
 		double totalPercent = 0;										//Gets each averaged percent of the database, then averages by how many databases there even are.
 		double databasesUsed = 0;											//How many databases got used. (In case you are testing a single solution, which wont have a percent for every single database. In a large database, this should be equal to around 35.
 		
@@ -125,7 +153,7 @@ public class DataAnalyzer {
 		//System.out.println("	Average: "+round(totalPercent/databasesUsed, decimalsToDisplay, BigDecimal.ROUND_HALF_UP));
 	}
 	
-	private static void printGraphics(){										//Prints out all of the results from the data analysis.
+	private static void printGraphics(double[][][][][][] percent, int[][][][][][] tally){										//Prints out all of the results from the data analysis.
 		int solutionCounter = 0;
 		for(int in0 = 0; in0 <= 1; in0++){								//in0	block above
 			for(int in1 = 0; in1 <= 1; in1++){							//in1	block below
@@ -141,7 +169,7 @@ public class DataAnalyzer {
 							if(actionPerformed){					//If an action was indeed performed, continue with the printing of graphics for that situation.
 								System.out.println("//////////////////////////////////////////////////////////////");
 								System.out.println("#"+solutionCounter+": "+in0+" "+in1+" "+in2+" "+in3+" "+in4);
-								System.out.println("UP: "+percent[in0][in1][in2][in3][in4][0]+"%     DOWN: "+percent[in0][in1][in2][in3][in4][1]+"%     LEFT: "+percent[in0][in1][in2][in3][in4][2]+"%     RIGHT: "+percent[in0][in1][in2][in3][in4][3]+"%\n");
+								System.out.println("UP: "+round(percent[in0][in1][in2][in3][in4][0], decimalsToDisplay, BigDecimal.ROUND_HALF_UP)+"%     DOWN: "+round(percent[in0][in1][in2][in3][in4][1], decimalsToDisplay, BigDecimal.ROUND_HALF_UP)+"%     LEFT: "+round(percent[in0][in1][in2][in3][in4][2], decimalsToDisplay, BigDecimal.ROUND_HALF_UP)+"%     RIGHT: "+round(percent[in0][in1][in2][in3][in4][3], decimalsToDisplay, BigDecimal.ROUND_HALF_UP)+"%\n");
 								
 								if(in0 == 1){			//Block above
 									System.out.println("                    "+tally[in0][in1][in2][in3][in4][0]);	//Take out
@@ -211,35 +239,6 @@ public class DataAnalyzer {
 		
 	}
 	
-	public static double[][][][][][] getPercent(int[][][][][][] tally){											//Fills up the percent array with processed data from the tally array.
-		double[][][][][][] percent = new double[2][2][2][2][4][4];
-		
-		for(int in0 = 0; in0 <= 1; in0++){								//in0	block above
-			for(int in1 = 0; in1 <= 1; in1++){							//in1	block below
-				for(int in2 = 0; in2 <=1; in2++){						//in2	block left
-					for(int in3 = 0; in3 <=1; in3++){					//in3	block right
-						for(int in4 = 0; in4 <= 3; in4++){				//in4	last move (up,down,left, or right)
-							
-							double total = 0;
-							for(int in5 = 0; in5 <= 3; in5++){			//Finds the total tallies, in order to divide each possible solution's tally by total tallys.
-								percent[in0][in1][in2][in3][in4][in5] = 0;
-								total += tally[in0][in1][in2][in3][in4][in5];
-							}
-							if(total != 0){								//So that I don't divide by zero...
-								for(int in5 = 0; in5 <= 3; in5++){		//Goes through each out, and sets it as the percent of the total. Cool simple code, me gusta! p.s. I am so tired. It is finals week, and I should not be coding. Well. Toodleoo! To the next line I go...
-									//percent[in0][in1][in2][in3][in4][in5] = round((double) tally[in0][in1][in2][in3][in4][in5]/total*100,2,BigDecimal.ROUND_HALF_UP);
-									percent[in0][in1][in2][in3][in4][in5] = (tally[in0][in1][in2][in3][in4][in5]/total)*100;
-								}
-							}
-							
-							
-						}
-					}
-				}
-			}
-		}
-		return percent;
-	}
 	
 /*	public static void getTally(){												//Fills up the tally array with the correct amount of tallys for each situation.
 		int counter = 0;					//For replaying purposes.

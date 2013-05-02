@@ -73,88 +73,111 @@ public class ReadSolutions {
 	}
 
 	
-	public int[][][][][][] getRawInputArray(String[] solutionSet){
-		int[][][][][][] tallyInputs = new int[2][2][2][2][4][4];			
+	public int[][][][][][] getRawInputArray(String[] solutionSet, boolean includeLastOutput){
+		int[][][][][][] tallyInputs	= new int[2][2][2][2][4][4];;
+
 		for(int s = 0; s < solutionSet.length; s++){
 			for(int l = 0; l < solutionSet[s].length(); l++){
 				
-				int[] sol = getSituation(solutionSet[s],l);
+				int[] sol = getSituation(solutionSet[s],l, includeLastOutput);
 				int numericalOutput = 0;
 				if(solutionSet[s].charAt(l) == 'u'){ numericalOutput = 0;}
 				if(solutionSet[s].charAt(l) == 'd'){ numericalOutput = 1;}
 				if(solutionSet[s].charAt(l) == 'l'){ numericalOutput = 2;}
 				if(solutionSet[s].charAt(l) == 'r'){ numericalOutput = 3;}
-				tallyInputs[sol[0]][sol[1]][sol[2]][sol[3]][sol[4]][numericalOutput] += 1;		//Adds 1 to the tally for the given output of that person, for that given input set.
+				
+				if(includeLastOutput){
+					tallyInputs[sol[0]][sol[1]][sol[2]][sol[3]][sol[4]][numericalOutput] += 1;		//Adds 1 to the tally for the given output of that person, for that given input set.
+				}else{
+					tallyInputs[sol[0]][sol[1]][sol[2]][sol[3]][0][numericalOutput] += 1;		//Adds 1 to the tally for the given output of that person, for that given input set.
+				}
+				
 			}
 		}
 		
 		return tallyInputs;
 	}
 	
-	
-	public double[][] getInputs(float percent){											//inputs[][] = {	{bUp, bDown, bLeft, bRight, lMov }, {bUp, bDown, bLeft, bRight, lMov }	} an example of an array with two input sets
-		int solutionsToRecord = ((int) (percent*totalMoves));
-		double inputs[][] = new double[solutionsToRecord][5];							//Makes an array of the appropriate size. (the percent amount of total moves, in int format)
-		outputs = new double[solutionsToRecord][2];
-		int solutionsRecorded = 0;														//Since the ANN must be fed truly random info, it will just randomly set info until the array is full. This keeps track of how much info has, indeed, been recorded so far.
-		//System.out.println("	Inputs to learn: "+inputs.length);						//This prints the amount of input sets that will be fed into the ANN.
+	public double[][][] getMapPercent(String[] solutionSet){							//Gets Map[x][y] and [0-3] of which direction, returns the percent of people who went that way in that particular spot.
+		int[][][][][][] rawInputArray = getRawInputArray(solutionSet, false);					//Sets up the percent array to pull from.
+		double[][][][][][] rawPercentArray = getPercent(rawInputArray);
+		
+		double[][][] mapPercent = new double[Constants.MAP_WIDTH][Constants.MAP_HEIGHT][4];	//This will be the array that gets returned.
+		
+		for(int x = 0; x < Constants.MAP_WIDTH; x++){
+			for(int y = 0; y < Constants.MAP_HEIGHT; y++){
+				
+				if(map[x][y] == Constants.MAP_SPACE){										//If its a used and travelled space.
+					int[] s = new int[4];							//Holds the current situation, to find it in the rawPercentArray [up][down][left][right]
+					
+					////////////////////////////// SETS UP s (situation) array, to find the corrosponding rawPercentArray information
+					if(y + 1 < Constants.MAP_HEIGHT){	//If you're not at the bottom of the map.
+						s[1] = map[x][y+1];	//below you
+					}else{ s[1] = Constants.MAP_BLOCK;	}	
 
-		for(int i =0; i< inputs.length; i++){
-			for(int j=0; j < inputs[i].length; j++){
-				inputs[i][j] = -10;
+					if(y - 1 >= 0){						//If you're not at the top of the map.
+						s[0] = map[x][y-1];	//above you
+						if(s[0] == Constants.MAP_START){ s[0] = Constants.MAP_SPACE; }
+					}else{	s[0] = Constants.MAP_BLOCK;}	
+
+					if(x + 1 < Constants.MAP_WIDTH){	//If you're not at the right edge of the map.
+						s[3] = map[x+1][y];	//right of you
+					}else{	s[3] = Constants.MAP_BLOCK;}	
+
+					if(x - 1 >= 0){						//If you're not at the left edge of the map.	
+						s[2] = map[x-1][y];	//left of you
+						if(s[2] == Constants.MAP_WIN){ s[2] = Constants.MAP_SPACE; }
+					}else{	s[2] = Constants.MAP_BLOCK;}	
+					//////////////////////////////
+					mapPercent[x][y][0] = rawPercentArray[s[0]][s[1]][s[2]][s[3]][0][0];
+					mapPercent[x][y][1] = rawPercentArray[s[0]][s[1]][s[2]][s[3]][0][1];
+					mapPercent[x][y][2] = rawPercentArray[s[0]][s[1]][s[2]][s[3]][0][2];
+					mapPercent[x][y][3] = rawPercentArray[s[0]][s[1]][s[2]][s[3]][0][3];
+					
+				}
 			}
-			
-			
-			
-			
 		}
-
-
-		while(solutionsRecorded < inputs.length){										//While the array has not been fully filled.
-			for(int s = 0; s < solutions.length; s++){									//Goes through each move of each solution, picking at random (percent) intervals an input to record.
-				for(int l = 0; l < solutions[s].length(); l++){							//Goes through the entire string of that particular solution.
-
-					if(r.nextFloat() < percent && solutionsRecorded < inputs.length){	//If it randomly chooses it, then record that input.
-						//System.out.println(""+solutions[s].charAt(l));
-						double[] test = getSituation(solutions[s], l);
-						boolean isOriginal = true;										//Holds wether or not the new solution datapoint is a new, original, datapoint.
-						for(int i = 0; i < inputs.length; i++){							//Goes through each input set, and checks that there has not been an equivalent marked down yet.
-							int copy = 0;
-							for(int j = 0; j < inputs[i].length; j++){					//Goes through each set of inputs from an input set
-								if(inputs[i][j] != test[j]){
-									break;
-								}
-								if(inputs[i][j] == test[j]){
-									copy += 1;
-								}
-
+		return mapPercent;
+	}
+	
+	public static double[][][][][][] getPercent(int[][][][][][] tally){											//Fills up the percent array with processed data from the tally array.
+		double[][][][][][] percent = new double[2][2][2][2][4][4];
+		
+		for(int in0 = 0; in0 <= 1; in0++){								//in0	block above
+			for(int in1 = 0; in1 <= 1; in1++){							//in1	block below
+				for(int in2 = 0; in2 <=1; in2++){						//in2	block left
+					for(int in3 = 0; in3 <=1; in3++){					//in3	block right
+						for(int in4 = 0; in4 <= 3; in4++){				//in4	last move (up,down,left, or right)
+							
+							double total = 0;
+							for(int in5 = 0; in5 <= 3; in5++){			//Finds the total tallies, in order to divide each possible solution's tally by total tallys.
+								percent[in0][in1][in2][in3][in4][in5] = 0;
+								total += tally[in0][in1][in2][in3][in4][in5];
 							}
-							if(copy == inputs[i].length){
-								isOriginal = false;
-								break;
+							if(total != 0){								//So that I don't divide by zero...
+								for(int in5 = 0; in5 <= 3; in5++){		//Goes through each out, and sets it as the percent of the total. Cool simple code, me gusta! p.s. I am so tired. It is finals week, and I should not be coding. Well. Toodleoo! To the next line I go...
+									//percent[in0][in1][in2][in3][in4][in5] = round((double) tally[in0][in1][in2][in3][in4][in5]/total*100,2,BigDecimal.ROUND_HALF_UP);
+									percent[in0][in1][in2][in3][in4][in5] = (tally[in0][in1][in2][in3][in4][in5]/total)*100;
+								}
 							}
+							
+							
 						}
-						if(isOriginal){
-							inputs[solutionsRecorded] = getSituation(solutions[s], l);					//Gets the inputs at the time that that situation was recorded.
-							outputs[solutionsRecorded] = getOutputNumber(solutions[s].charAt(l));		//Records the given output (move) for that situation in the solution string.
-							solutionsRecorded += 1;
-						}
-
-						break;
 					}
 				}
 			}
-
 		}
-		//System.out.println("	Inputs to learn: "+inputs.length);						//This prints the amount of input sets that will be fed into the ANN.
-
-		return inputs;
+		return percent;
 	}
 
-	public static int[] getSituation(String solution, int move){							//Gets the inputs at the time that a particular move was performed, in the String solution.
-
-		int[] situation = new int[5];	//Order: [0] = up, [1] = down, [2] = left, [3] = right, [4] = lastOutput. 0 = open block, 1 = filled block.
-
+	public static int[] getSituation(String solution, int move, boolean includeLastMove){							//Gets the inputs at the time that a particular move was performed, in the String solution.
+		int[] situation;
+		if(includeLastMove){
+			situation = new int[5];	//Order: [0] = up, [1] = down, [2] = left, [3] = right, [4] = lastOutput. 0 = open block, 1 = filled block.
+		}else{
+			situation = new int[4];
+		}
+		
 		int rightMoves = 0;
 		int leftMoves = 0;
 		int upMoves = 0;
@@ -187,52 +210,25 @@ public class ReadSolutions {
 			if(situation[2] == Constants.MAP_WIN){ situation[2] = Constants.MAP_SPACE; }
 		}else{	situation[2] = Constants.MAP_BLOCK;}	
 
-
-
-		if(move > 0){								//Finds the last move. Is recorded as: NO LAST MOVE = 0; 0 =u; 1/3=d; 2/3=l; 1=r
-			situation[4] = solution.charAt(move-1);
-			if(solution.charAt(move-1) == 'u'){	situation[4] = Constants.DIR_UP;}
-			if(solution.charAt(move-1) == 'd'){	situation[4] = Constants.DIR_DOWN;}
-			if(solution.charAt(move-1) == 'l'){	situation[4] = Constants.DIR_LEFT;}
-			if(solution.charAt(move-1) == 'r'){	situation[4] = Constants.DIR_RIGHT;}
-		}else{
-			situation[4] = Constants.DIR_UP;
+		
+		if(includeLastMove){
+			if(move > 0){								//Finds the last move. Is recorded as: NO LAST MOVE = 0; 0 =u; 1/3=d; 2/3=l; 1=r
+				situation[4] = solution.charAt(move-1);
+				if(solution.charAt(move-1) == 'u'){	situation[4] = Constants.DIR_UP;}
+				if(solution.charAt(move-1) == 'd'){	situation[4] = Constants.DIR_DOWN;}
+				if(solution.charAt(move-1) == 'l'){	situation[4] = Constants.DIR_LEFT;}
+				if(solution.charAt(move-1) == 'r'){	situation[4] = Constants.DIR_RIGHT;}
+			}else{
+				situation[4] = Constants.DIR_UP;
+			}
 		}
-
 		//System.out.println("Solution: " +solution);
 		//System.out.println("Move: "+move+" "+solution.charAt(move)+" "+"	Up: "+situation[0]+"	Down: "+situation[1]+"	Left: "+situation[2]+"	Right: "+situation[3]+"	LastMove: "+situation[4]);
 		//System.out.println("pXpY("+pX+","+pY+")"+"	pXpY("+sX+","+sY+")");
 		return situation;
 	}
 
-	public double[][] getOutputs(){			//The output array is set inside of the getInputs(percent) method.
-		return outputs;
-	}
-
-	public static int[] getOutputNumber(char outputnumber){	//Gets the number version of the output letter.		0,0=u;	0,1=ed;	1,0=l;	1,1=r
-		int[] out = new int[2];
-
-		if(outputnumber == 'u'){//11 = u; 00 = d; 10 = l; 01 = r
-			out[0] = Constants.positive;
-			out[1] = Constants.positive;
-		}
-		if(outputnumber == 'd'){
-			out[0] = Constants.negative;
-			out[1] = Constants.negative;
-		}
-		if(outputnumber == 'l'){
-			out[0] = Constants.positive;
-			out[1] = Constants.negative;
-		}
-		if(outputnumber == 'r'){
-			out[0] = Constants.negative;
-			out[1] = Constants.positive;
-		}
-
-		return out;
-
-	}
-
+	
 	public static void getmapArray(){		//Sets the map[][] array to the same map[][] array in the main MazeGame.
 		m.loadMap(mapnumber);	//loads the map.
 		for(int x=0; x<Constants.MAP_WIDTH; x++) {		
