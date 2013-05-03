@@ -98,46 +98,79 @@ public class ReadSolutions {
 		return tallyInputs;
 	}
 	
+	
+	
 	public double[][][] getMapPercent(String[] solutionSet){							//Gets Map[x][y] and [0-3] of which direction, returns the percent of people who went that way in that particular spot.
-		int[][][][][][] rawInputArray = getRawInputArray(solutionSet, false);					//Sets up the percent array to pull from.
-		double[][][][][][] rawPercentArray = getPercent(rawInputArray);
+		double[][][] mapPercent = new double[Constants.MAP_WIDTH][Constants.MAP_HEIGHT][4];
+		double[][][] percent = new double[Constants.MAP_WIDTH][Constants.MAP_HEIGHT][4];
 		
-		double[][][] mapPercent = new double[Constants.MAP_WIDTH][Constants.MAP_HEIGHT][4];	//This will be the array that gets returned.
-		
-		for(int x = 0; x < Constants.MAP_WIDTH; x++){
-			for(int y = 0; y < Constants.MAP_HEIGHT; y++){
+		for(int i = 0; i < solutionSet.length; i++){
+			for(int j = 0; j < solutionSet[i].length(); j++){
+				int[] coordinates = getCoordinates(solutionSet[i], j);	//Gets the [0] = x, and the [1] = y of the position where the person did that particular move.
 				
-				if(map[x][y] == Constants.MAP_SPACE){										//If its a used and travelled space.
-					int[] s = new int[4];							//Holds the current situation, to find it in the rawPercentArray [up][down][left][right]
-					
-					////////////////////////////// SETS UP s (situation) array, to find the corrosponding rawPercentArray information
-					if(y + 1 < Constants.MAP_HEIGHT){	//If you're not at the bottom of the map.
-						s[1] = map[x][y+1];	//below you
-					}else{ s[1] = Constants.MAP_BLOCK;	}	
-
-					if(y - 1 >= 0){						//If you're not at the top of the map.
-						s[0] = map[x][y-1];	//above you
-						if(s[0] == Constants.MAP_START){ s[0] = Constants.MAP_SPACE; }
-					}else{	s[0] = Constants.MAP_BLOCK;}	
-
-					if(x + 1 < Constants.MAP_WIDTH){	//If you're not at the right edge of the map.
-						s[3] = map[x+1][y];	//right of you
-					}else{	s[3] = Constants.MAP_BLOCK;}	
-
-					if(x - 1 >= 0){						//If you're not at the left edge of the map.	
-						s[2] = map[x-1][y];	//left of you
-						if(s[2] == Constants.MAP_WIN){ s[2] = Constants.MAP_SPACE; }
-					}else{	s[2] = Constants.MAP_BLOCK;}	
-					//////////////////////////////
-					mapPercent[x][y][0] = rawPercentArray[s[0]][s[1]][s[2]][s[3]][0][0];
-					mapPercent[x][y][1] = rawPercentArray[s[0]][s[1]][s[2]][s[3]][0][1];
-					mapPercent[x][y][2] = rawPercentArray[s[0]][s[1]][s[2]][s[3]][0][2];
-					mapPercent[x][y][3] = rawPercentArray[s[0]][s[1]][s[2]][s[3]][0][3];
-					
+				if(getNumericalOutput(solutionSet[i].charAt(j)) != -1){
+					mapPercent[coordinates[0]][coordinates[1]][getNumericalOutput(solutionSet[i].charAt(j))] += 1;	//Adds one to that direction at that coordinate.
+				}else{
+					System.out.println("Serious error. getNumericalOutput returned a -1");
 				}
+				
 			}
 		}
-		return mapPercent;
+		
+		
+		for(int x = 0; x < mapPercent.length; x++){								//Converts it to a percent
+			for(int y = 0; y < mapPercent[x].length; y++){
+				
+				double total = 0;
+				for(int direction = 0; direction <= 3; direction++){			//Finds the total tallies, in order to divide each possible solution's tally by total tallys.
+					percent[x][y][direction]= 0;
+					total += mapPercent[x][y][direction];
+				}
+				if(total != 0){								//So that I don't divide by zero...
+					for(int direction = 0; direction <= 3; direction++){		//Goes through each out, and sets it as the percent of the total. Cool simple code, me gusta! p.s. I am so tired. It is finals week, and I should not be coding. Well. Toodleoo! To the next line I go...
+						//percent[in0][in1][in2][in3][in4][in5] = round((double) tally[in0][in1][in2][in3][in4][in5]/total*100,2,BigDecimal.ROUND_HALF_UP);
+						percent[x][y][direction] = (mapPercent[x][y][direction]/total)*100;
+					}
+				}
+				
+				
+			}
+		}
+		
+		
+		return percent;
+	}
+	
+	public static int[] getCoordinates(String solution, int move){					//Gets [0] = x, [1] = y
+		int[] coordinates = new int[2];
+		
+		int rightMoves = 0;
+		int leftMoves = 0;
+		int upMoves = 0;
+		int downMoves = 0;
+
+		for(int m = 0; m < move; m++){
+			if(solution.charAt(m) == 'r'){	rightMoves += 1;}
+			if(solution.charAt(m) == 'l'){	leftMoves += 1;	}
+			if(solution.charAt(m) == 'u'){	upMoves += 1;	}
+			if(solution.charAt(m) == 'd'){	downMoves += 1;	}
+		}
+		int pX = sX + (rightMoves - leftMoves);	//finds the player position at that time.
+		int pY = sY + (downMoves  - upMoves	);	//Finds the player position at that time.
+		
+		coordinates[0] = pX;
+		coordinates[1] = pY;
+		
+		return coordinates;
+	}
+	
+	public static int getNumericalOutput(char s){										//Returns 0 for up, 1 for down, 2 for left, 3 for right
+		int numericalOutput = -1;
+		if(s == 'u'){ numericalOutput = 0;}
+		if(s == 'd'){ numericalOutput = 1;}
+		if(s == 'l'){ numericalOutput = 2;}
+		if(s == 'r'){ numericalOutput = 3;}
+		return numericalOutput;
 	}
 	
 	public static double[][][][][][] getPercent(int[][][][][][] tally){											//Fills up the percent array with processed data from the tally array.

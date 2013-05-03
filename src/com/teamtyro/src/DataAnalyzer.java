@@ -50,7 +50,7 @@ public class DataAnalyzer {
 
 		
 		System.out.println("Genetic Algorithm solutions compared to Human Solutions:");
-			printPercents(r.humanSolutions, r.geneticSolutions);
+			printMapPercents(r.humanSolutions, r.geneticSolutions);
 		
 		
 		System.out.println("\nNeural Network solutions compared to Human Solutions:");
@@ -71,24 +71,59 @@ public class DataAnalyzer {
 	}
 	
 	
-	private static int readInfo(String prompt){		//Tool for reading lines from console
+	
+	private static void printMapPercents(String[] firstSet, String[] secondSet){
+		
+		double[][][] mapPercentOne = r.getMapPercent(firstSet);
+		double[][][] mapPercentTwo = r.getMapPercent(secondSet);
 
-		//System.out.printf(prompt + "\n");//prompt
-		System.out.printf(prompt);//prompt
+		double totalPercent = 0;										//Gets each averaged percent of the database, then averages by how many databases there even are.
+		double databasesUsed = 0;											//How many databases got used. (In case you are testing a single solution, which wont have a percent for every single database. In a large database, this should be equal to around 35.
+		
+		double totalDifference = 0;
+		
+		for(int x = 0; x < Constants.MAP_WIDTH; x++){
+			for(int y = 0; y < Constants.MAP_HEIGHT; y++){
 
-		//read information from console
-		try{
-		    BufferedReader bufferRead = new BufferedReader(new InputStreamReader(System.in));
-		    String s = bufferRead.readLine();
+				double totalDifferencePlaceholder = 0;
+				for(int direction = 0; direction <= 3; direction++){
+					double difference = mapPercentOne[x][y][direction]-mapPercentTwo[x][y][direction];	//Finds the difference
+					if(difference < 0){ difference = difference*(-1);}																//Converts difference to a positive number
+					//System.out.println("%1: "+mapPercentOne[x][y][direction]+" %2: "+mapPercentTwo[x][y][direction]+"Difference: "+difference);
+					totalDifferencePlaceholder += difference;
+				}
+				//System.out.println("TotalDifference: "+totalDifferencePlaceholder);
+				
+				
+				
+				
+				////////////////////////////////////
+				double whatToDivideBy = 0;					//Is only a double to avoid issues when dividing another double by an int. Just makin sure stuff works:)
+				double totalPercentTemporary = 0;
+				
+				for(int direction = 0; direction <= 3; direction++){
+					
+					if(mapPercentOne[x][y][direction] != 0 || mapPercentTwo[x][y][direction] != 0){	
+						whatToDivideBy += 1;
+						//System.out.println(whatToDivideBy);
+						double total = mapPercentOne[x][y][direction]+mapPercentTwo[x][y][direction];	//Gets total
+						totalPercentTemporary += mapPercentTwo[x][y][direction]/total;
+					}
 
-		    int x = Integer.parseInt(s);
-		    return x;
+				}
+				if(whatToDivideBy != 0){ 
+					databasesUsed += 1;
+					totalPercent += totalPercentTemporary/whatToDivideBy;
+					totalDifference += totalDifferencePlaceholder;
+				}
+				//////////////////////////////////
+				//System.out.println("Total: "+totalDifference+"TotalDatabases: "+databasesUsed);
+				
+			}
 		}
-		catch(IOException e)
-		{
-			e.printStackTrace();
-		}
-		return -10000;
+		
+		System.out.println("	TotalPercentChange: "+round(totalDifference, decimalsToDisplay, BigDecimal.ROUND_HALF_UP)+"	Percent Change Average: "+round((totalDifference/databasesUsed)/2, decimalsToDisplay, BigDecimal.ROUND_HALF_UP));
+		//System.out.println("	Average: "+round(totalPercent/databasesUsed, decimalsToDisplay, BigDecimal.ROUND_HALF_UP));
 	}
 	
 	private static void printPercents(String[] firstSet, String[] secondSet){
@@ -629,5 +664,25 @@ public class DataAnalyzer {
 	    BigDecimal bd = new BigDecimal(unrounded);
 	    BigDecimal rounded = bd.setScale(precision, roundingMode);
 	    return rounded.doubleValue();
+	}
+
+	private static int readInfo(String prompt){		//Tool for reading lines from console
+
+		//System.out.printf(prompt + "\n");//prompt
+		System.out.printf(prompt);//prompt
+
+		//read information from console
+		try{
+		    BufferedReader bufferRead = new BufferedReader(new InputStreamReader(System.in));
+		    String s = bufferRead.readLine();
+
+		    int x = Integer.parseInt(s);
+		    return x;
+		}
+		catch(IOException e)
+		{
+			e.printStackTrace();
+		}
+		return -10000;
 	}
 }
