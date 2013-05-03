@@ -121,6 +121,49 @@ public class DrawText {
 					GL11.glVertex2d(x+0.5, y+0.5);
 				GL11.glEnd();
 				break;
+			case 'r':
+				GL11.glBegin(GL11.GL_LINE_STRIP);
+					GL11.glVertex2d(x+0.0, y+0.5);
+					GL11.glVertex2d(x+0.5, y+0.5);
+				GL11.glEnd();
+				GL11.glBegin(GL11.GL_LINE_STRIP);
+					GL11.glVertex2d(x+0.3, y+0.7);
+					GL11.glVertex2d(x+0.5, y+0.5);
+					GL11.glVertex2d(x+0.3, y+0.3);
+				GL11.glEnd();
+				break;
+			case 'l':
+				GL11.glBegin(GL11.GL_LINE_STRIP);
+					GL11.glVertex2d(x+0.0, y+0.5);
+					GL11.glVertex2d(x+0.5, y+0.5);
+				GL11.glEnd();
+				GL11.glBegin(GL11.GL_LINE_STRIP);
+					GL11.glVertex2d(x+0.2, y+0.7);
+					GL11.glVertex2d(x+0.0, y+0.5);
+					GL11.glVertex2d(x+0.2, y+0.3);
+				GL11.glEnd();
+				break;
+			case 'u':
+				GL11.glBegin(GL11.GL_LINE_STRIP);
+					GL11.glVertex2d(x+0.25, y+0.0);
+					GL11.glVertex2d(x+0.25, y+1.0);
+				GL11.glEnd();
+				GL11.glBegin(GL11.GL_LINE_STRIP);
+					GL11.glVertex2d(x+0.1, y+0.7);
+					GL11.glVertex2d(x+0.25, y+1.0);
+					GL11.glVertex2d(x+0.4, y+0.7);
+				GL11.glEnd();
+				break;
+			case 'd':
+				GL11.glBegin(GL11.GL_LINE_STRIP);
+					GL11.glVertex2d(x+0.25, y+0.0);
+					GL11.glVertex2d(x+0.25, y+1.0);
+				GL11.glEnd();
+				GL11.glBegin(GL11.GL_LINE_STRIP);
+					GL11.glVertex2d(x+0.1, y+0.3);
+					GL11.glVertex2d(x+0.25, y+0.0);
+					GL11.glVertex2d(x+0.4, y+0.3);
+				GL11.glEnd();
 			}
 			
 			x+=0.70;

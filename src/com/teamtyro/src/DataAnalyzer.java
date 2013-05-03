@@ -11,6 +11,7 @@ import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
 
+import com.teamtyro.etc.BetterConstants;
 import com.teamtyro.etc.Constants;
 import com.teamtyro.etc.MazeMap;
 
@@ -18,6 +19,9 @@ public class DataAnalyzer {
 	private static TestSubject subjects[];
 	private static int map[][];
 	private static MazeMap maze;
+	
+	private static int whoToDisplay = 0;		//0 = human results. 1 = Genetic Algorithm results. 2 = Neural Network Results
+	private static int[][][] mapPercent;
 	
 	private static int maxDensity;
 	private static int camX, camY;
@@ -27,7 +31,30 @@ public class DataAnalyzer {
 	private static boolean [] keyPressed;
 	private static boolean numbers;
 	
+	private static ReadSolutions r;
+	
 	public static void main(String[] args) {
+		
+		r = new ReadSolutions("humanSolutions.txt", "geneticSolutions.txt", "neuralSolutions.txt");
+		switch(whoToDisplay){
+		case 0:
+			mapPercent =  r.getMapPercent(r.humanSolutions);
+		case 1:
+			mapPercent =  r.getMapPercent(r.geneticSolutions);
+		case 2:
+			mapPercent =  r.getMapPercent(r.neuralSolutions);
+		}
+		
+		for(int x = 0; x < Constants.MAP_WIDTH; x++){
+			for(int y = 0; y < Constants.MAP_HEIGHT; y++){
+				//System.out.println("x: "+x+" y: "+y);
+				//System.out.println(mapPercent[x][y][0]);
+				//System.out.println(mapPercent[x][y][1]);
+				//System.out.println(mapPercent[x][y][2]);
+				//System.out.println(mapPercent[x][y][3]);
+			}
+		}
+		
 		System.out.printf("DataAnalyzer V 0.0.1\n");
 		
 		subjects = new TestSubject [50];
@@ -140,7 +167,8 @@ public class DataAnalyzer {
 	}
 	
 	private static int getPercent(int x, int y, int dir) {
-		return 57;
+		
+		return mapPercent[x][y][dir];
 	}
 	
 	private static void drawRect(double x, double y, double w, double h) {
@@ -183,7 +211,7 @@ public class DataAnalyzer {
 					double txtH = txtSize;
 					GL11.glColor3f(1, 1, 1);
 					for(int i=0; i<4; i++) {
-						if(getPercent(0,0,i) == 0) {
+						if(getPercent(x,y,i) == 0) {
 							break;
 						}
 						
@@ -203,7 +231,21 @@ public class DataAnalyzer {
 							break;
 						}
 						GL11.glScaled(txtSize-1, txtSize-1, 0);
-						dText = new DrawText(Integer.toString(getPercent(0,0,i)));
+						
+						switch(i) {
+						case 0:
+							dText = new DrawText(Integer.toString(getPercent(x,Constants.MAP_HEIGHT-1-y,i))+"d");
+							break;
+						case 1:
+							dText = new DrawText(Integer.toString(getPercent(x,Constants.MAP_HEIGHT-1-y,i))+"u");
+							break;
+						case 2:
+							dText = new DrawText(Integer.toString(getPercent(x,Constants.MAP_HEIGHT-1-y,i))+"l");
+							break;
+						case 3:
+							dText = new DrawText(Integer.toString(getPercent(x,Constants.MAP_HEIGHT-1-y,i))+"r");
+							break;
+						}
 						dText.draw();
 						GL11.glPopMatrix();
 					}

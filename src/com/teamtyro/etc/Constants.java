@@ -26,10 +26,10 @@ public class Constants {
 	public static final int ERROR				=	69;
 	
 	// Directional constants, returned by recActions[]
-	public static final int DIR_RIGHT = 1;
+	public static final int DIR_RIGHT = 3;
 	public static final int DIR_LEFT = 2;
-	public static final int DIR_UP = 3;
-	public static final int DIR_DOWN = 4;
+	public static final int DIR_UP = 0;
+	public static final int DIR_DOWN = 1;
 	// Map space constants are returned by the map[] array
 	public static final int MAP_START = 4;
 	public static final int MAP_SPACE = 1;
@@ -38,5 +38,5 @@ public class Constants {
 	// Map property constants
 	public static final int MAP_WIDTH = 16;
 	public static final int MAP_HEIGHT = 16;
-	public static final int BLOCK_SIZE = 128;
+	public static final int BLOCK_SIZE = 64;
 }
