@@ -47,11 +47,11 @@ public class DataAnalyzer {
 		
 		for(int x = 0; x < Constants.MAP_WIDTH; x++){
 			for(int y = 0; y < Constants.MAP_HEIGHT; y++){
-				//System.out.println("x: "+x+" y: "+y);
-				//System.out.println(mapPercent[x][y][0]);
-				//System.out.println(mapPercent[x][y][1]);
-				//System.out.println(mapPercent[x][y][2]);
-				//System.out.println(mapPercent[x][y][3]);
+				System.out.println("x: "+x+" y: "+y);
+				System.out.println(mapPercent[x][y][0]);
+				System.out.println(mapPercent[x][y][1]);
+				System.out.println(mapPercent[x][y][2]);
+				System.out.println(mapPercent[x][y][3]);
 			}
 		}
 		
@@ -188,19 +188,19 @@ public class DataAnalyzer {
 				switch(map[x][y]) {
 				case Constants.MAP_BLOCK:
 					GL11.glColor3f(1, 0, 0);
-					drawRect(x*bs, y*bs, bs, bs);
+					drawRect(x*bs, ( (Constants.MAP_HEIGHT-1)*bs)-(y*bs), bs, bs);
 					break;
 				case Constants.MAP_START:
 					GL11.glColor3f(1, 1, 0);
-					drawRect(x*bs, y*bs, bs, bs);
+					drawRect(x*bs, ( (Constants.MAP_HEIGHT-1)*bs)-(y*bs), bs, bs);
 					break;
 				case Constants.MAP_WIN:
 					GL11.glColor3f(0, 1, 0);
-					drawRect(x*bs, y*bs, bs, bs);
+					drawRect(x*bs, ( (Constants.MAP_HEIGHT-1)*bs)-(y*bs), bs, bs);
 					break;
 				case Constants.MAP_SPACE:
 					GL11.glColor3f(0, 0, (float)maze.getDensity(x,y)/(float)maxDensity);
-					drawRect(x*bs, y*bs, bs, bs);
+					drawRect(x*bs, ( (Constants.MAP_HEIGHT-1)*bs)-(y*bs), bs, bs);
 					
 					if(!numbers) {
 						break;
@@ -211,20 +211,20 @@ public class DataAnalyzer {
 					double txtH = txtSize;
 					GL11.glColor3f(1, 1, 1);
 					for(int i=0; i<4; i++) {
-						if(getPercent(x,y,i) == 0) {
-							break;
-						}
+						//if(getPercent(x,y,i) == 0) {
+						//	break;
+						//}
 						
 						GL11.glPushMatrix();
 						switch(i) {
 						case 0:
-							GL11.glTranslated((x*bs)+(bs-txtW)/2, (y*bs)         , 0);
+							GL11.glTranslated((x*bs)+(bs-txtW)/2, (y*bs)         	, 0);
 							break;
 						case 1:
 							GL11.glTranslated((x*bs)+(bs-txtW)/2, (y*bs)+(bs-txtH)  , 0);
 							break;
 						case 2:
-							GL11.glTranslated((x*bs)         , (y*bs)+(bs-txtH)/2, 0);
+							GL11.glTranslated((x*bs)         	, (y*bs)+(bs-txtH)/2, 0);
 							break;
 						case 3:
 							GL11.glTranslated((x*bs)+(bs-txtW)  , (y*bs)+(bs-txtH)/2, 0);
@@ -234,16 +234,16 @@ public class DataAnalyzer {
 						
 						switch(i) {
 						case 0:
-							dText = new DrawText(Integer.toString(getPercent(x,Constants.MAP_HEIGHT-1-y,i))+"d");
+							dText = new DrawText(Integer.toString(getPercent(x,y,i))+"d");
 							break;
 						case 1:
-							dText = new DrawText(Integer.toString(getPercent(x,Constants.MAP_HEIGHT-1-y,i))+"u");
+							dText = new DrawText(Integer.toString(getPercent(x,y,i))+"u");
 							break;
 						case 2:
-							dText = new DrawText(Integer.toString(getPercent(x,Constants.MAP_HEIGHT-1-y,i))+"l");
+							dText = new DrawText(Integer.toString(getPercent(x,y,i))+"l");
 							break;
 						case 3:
-							dText = new DrawText(Integer.toString(getPercent(x,Constants.MAP_HEIGHT-1-y,i))+"r");
+							dText = new DrawText(Integer.toString(getPercent(x,y,i))+"r");
 							break;
 						}
 						dText.draw();
