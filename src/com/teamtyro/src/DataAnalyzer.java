@@ -169,10 +169,21 @@ public class DataAnalyzer {
 	private static int getPercent(int x, int y, int dir) {
 		
 		return mapPercent[x][y][dir];
+
 	}
 	
 	private static void drawRect(double x, double y, double w, double h) {
 		GL11.glBegin(GL11.GL_QUADS);
+			GL11.glVertex2d(x  ,y  );
+			GL11.glVertex2d(x+w,y  );
+			GL11.glVertex2d(x+w,y+h);
+			GL11.glVertex2d(x  ,y+h);
+		GL11.glEnd();
+	}
+	
+	private static void drawEmptyRect(double x, double y, double w, double h) {
+		GL11.glColor3f(1, 1, 1);
+		GL11.glBegin(GL11.GL_LINE_LOOP);
 			GL11.glVertex2d(x  ,y  );
 			GL11.glVertex2d(x+w,y  );
 			GL11.glVertex2d(x+w,y+h);
@@ -211,46 +222,49 @@ public class DataAnalyzer {
 					double txtH = txtSize;
 					GL11.glColor3f(1, 1, 1);
 					for(int i=0; i<4; i++) {
-						//if(getPercent(x,y,i) == 0) {
-						//	break;
-						//}
 						
-						GL11.glPushMatrix();
-						switch(i) {
-						case 0:
-							GL11.glTranslated((x*bs)+(bs-txtW)/2, (y*bs)         	, 0);
-							break;
-						case 1:
-							GL11.glTranslated((x*bs)+(bs-txtW)/2, (y*bs)+(bs-txtH)  , 0);
-							break;
-						case 2:
-							GL11.glTranslated((x*bs)         	, (y*bs)+(bs-txtH)/2, 0);
-							break;
-						case 3:
-							GL11.glTranslated((x*bs)+(bs-txtW)  , (y*bs)+(bs-txtH)/2, 0);
-							break;
+						if(getPercent(x,y,i) != 0) {
+							GL11.glPushMatrix();
+							switch(i) {
+							case 0:
+								GL11.glTranslated((x*bs)+(bs-txtW)/2, ((Constants.MAP_HEIGHT)*bs)-(y*bs)         	, 0);
+								break;
+							case 1:
+								GL11.glTranslated((x*bs)+(bs-txtW)/2, ((Constants.MAP_HEIGHT)*bs)-((y*bs)+(bs-txtH))  , 0);
+								break;
+							case 2:
+								GL11.glTranslated((x*bs)         	, ((Constants.MAP_HEIGHT)*bs)-((y*bs)+(bs-txtH)/2), 0);
+								break;
+							case 3:
+								GL11.glTranslated((x*bs)+(bs-txtW)  , ((Constants.MAP_HEIGHT)*bs)-((y*bs)+(bs-txtH)/2), 0);
+								break;
+							}
+							GL11.glTranslated(0,-txtH, 0);
+							GL11.glScaled(txtSize-1, txtSize-1, 0);
+							
+							switch(i) {
+							case 0:
+								dText = new DrawText(Integer.toString(getPercent(x,y,i)));
+								break;
+							case 1:
+								dText = new DrawText(Integer.toString(getPercent(x,y,i)));
+								break;
+							case 2:
+								dText = new DrawText(Integer.toString(getPercent(x,y,i)));
+								break;
+							case 3:
+								dText = new DrawText(Integer.toString(getPercent(x,y,i)));
+								break;
+							}
+							
+							dText.draw();
+							GL11.glPopMatrix();
 						}
-						GL11.glScaled(txtSize-1, txtSize-1, 0);
-						
-						switch(i) {
-						case 0:
-							dText = new DrawText(Integer.toString(getPercent(x,y,i))+"d");
-							break;
-						case 1:
-							dText = new DrawText(Integer.toString(getPercent(x,y,i))+"u");
-							break;
-						case 2:
-							dText = new DrawText(Integer.toString(getPercent(x,y,i))+"l");
-							break;
-						case 3:
-							dText = new DrawText(Integer.toString(getPercent(x,y,i))+"r");
-							break;
-						}
-						dText.draw();
-						GL11.glPopMatrix();
 					}
 					break;
 				}
+				
+				drawEmptyRect(x*bs, ( (Constants.MAP_HEIGHT-1)*bs)-(y*bs), bs, bs);
 			}
 		}
 	}
