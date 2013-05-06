@@ -38,5 +38,5 @@ public class Constants {
 	// Map property constants
 	public static final int MAP_WIDTH = 16;
 	public static final int MAP_HEIGHT = 16;
-	public static final int BLOCK_SIZE = 64;
+	public static final int BLOCK_SIZE = 32;
 }

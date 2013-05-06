@@ -16,15 +16,17 @@ import com.teamtyro.etc.Constants;
 import com.teamtyro.etc.MazeMap;
 
 public class DataAnalyzer {
-	private static TestSubject subjects[];
+	private static TestSubject[] subjects;
 	private static int map[][];
 	private static MazeMap maze;
+	public static String[] allTests;
 	
-	private static int whoToDisplay = 0;		//0 = human results. 1 = Genetic Algorithm results. 2 = Neural Network Results
+	private static int whoToDisplay =0;		//0 = human results. 1 = Genetic Algorithm results. 2 = Neural Network Results
 	private static int[][][] mapPercent;
 	
 	private static int maxDensity;
 	private static int camX, camY;
+	private static int subjectCount;
 	
 	private static DrawText dText;
 	
@@ -38,14 +40,30 @@ public class DataAnalyzer {
 		r = new ReadSolutions("humanSolutions.txt", "geneticSolutions.txt", "neuralSolutions.txt");
 		switch(whoToDisplay){
 		case 0:
+			subjectCount = 45;
+			allTests = new String[subjectCount];
 			mapPercent =  r.getMapPercent(r.humanSolutions);
+			//subjects = new TestSubject[subjectCount];
+			parseRegularText("humanSolutions.txt", subjectCount);
+			break;
 		case 1:
+			subjectCount = 534;
+			allTests = new String[subjectCount];
 			mapPercent =  r.getMapPercent(r.geneticSolutions);
+			//subjects = new TestSubject[subjectCount];
+			parseRegularText("geneticSolutions.txt", subjectCount);
+			break;
 		case 2:
+			subjectCount = 293;
+			allTests = new String[subjectCount];
 			mapPercent =  r.getMapPercent(r.neuralSolutions);
+			//subjects = new TestSubject[subjectCount];
+			parseRegularText("neuralSolutions.txt", subjectCount);
+
+			break;
 		}
 		
-		for(int x = 0; x < Constants.MAP_WIDTH; x++){
+/*		for(int x = 0; x < Constants.MAP_WIDTH; x++){
 			for(int y = 0; y < Constants.MAP_HEIGHT; y++){
 				System.out.println("x: "+x+" y: "+y);
 				System.out.println(mapPercent[x][y][0]);
@@ -53,12 +71,9 @@ public class DataAnalyzer {
 				System.out.println(mapPercent[x][y][2]);
 				System.out.println(mapPercent[x][y][3]);
 			}
-		}
+		}*/
 		
 		System.out.printf("DataAnalyzer V 0.0.1\n");
-		
-		subjects = new TestSubject [50];
-		parseTextyText("game_first_run.txt");
 		
 		map = new int[16][16];
 		maze = new MazeMap();
@@ -67,8 +82,8 @@ public class DataAnalyzer {
 				"bbbcbbbbccccccccccbcbbbbbbbbbcbbbcccbbbbcccbbcccccccbbbbcbccccbcc" +
 				"cbcbbbbcbbbbbbcbcbcbbbbcbwcccbcbcbcbbbbcbbbbcbbbcbcbbbbcccccccccc" +
 				"ccbbbb");
-		for(int i=0; i<10; i++) {
-			maze.loadDensity(subjects[i]);
+		for(int i=0; i< allTests.length; i++) {
+			maze.loadDensity(allTests[i]);
 		}
 		
 		for(int x=0; x<Constants.MAP_WIDTH; x++) {
@@ -122,6 +137,28 @@ public class DataAnalyzer {
 	    	subjects[j] = new TestSubject(input[7], input[6], input[5], input[9], 1);
 	    	System.out.printf("%d\n%d\n%d\n\n", subjects[j].getGender(), subjects[j].getAge(), subjects[j].getEthnicity());
 	    	charsRead = 1;
+	    }
+	    
+	    try {
+	    	textFile.close();
+	    } catch(IOException ex) {}
+	}
+
+	private static void parseRegularText(String filename, int cnt) {
+		BufferedReader textFile;
+	    try {
+	    	textFile = new BufferedReader(new FileReader(filename));
+	    } catch(FileNotFoundException ex) {
+	    	System.out.printf("ERROR: Cannot load Texty Text\n");
+	    	return;
+	    }
+	    
+	    String line;	    
+	    for(int j=0; j<cnt; j++) {
+
+	    	try { line = textFile.readLine(); } catch (IOException ex) { return; }
+	    	System.out.printf("%s\n", line);
+	    	allTests[j] = line;
 	    }
 	    
 	    try {

@@ -66,7 +66,7 @@ public class TestSubject {
 		playCount = sPlayCount;
 		actions = new String[sPlayCount];
 		for(int i=0; i<sActions.length(); i++) {
-			actions[0] = sActions;
+			actions[i] = sActions;
 		}
 	}
 	
@@ -84,6 +84,11 @@ public class TestSubject {
 	
 	public int getAge() {
 		return age;
+	}
+	
+	public void setActions(String a) {
+		actions[0] = "";
+		actions[0] = a;
 	}
 	
 	public String getActions(int playNumb) {

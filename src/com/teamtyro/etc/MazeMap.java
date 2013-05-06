@@ -66,13 +66,11 @@ public class MazeMap {
 		}
 	}
 	
-	public void loadDensity(TestSubject subject) {
+	public void loadDensity(String actions) {
 		int x = sX;
 		int y = sY;
 		int inc = 0;
 		
-		
-		String actions = subject.getActions(0);
 		for(int i=0; i<actions.length(); i++) {
 			switch(actions.charAt(i)) {
 			case 'l':
