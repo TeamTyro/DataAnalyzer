@@ -217,8 +217,8 @@ public class DataAnalyzer {
 						break;
 					}
 					
-					double txtSize = bs/5;
-					double txtW = (1+0.4)*txtSize;
+					double txtSize = bs/4;
+					double txtW = (1.4)*txtSize;
 					double txtH = txtSize;
 					GL11.glColor3f(1, 1, 1);
 					for(int i=0; i<4; i++) {
